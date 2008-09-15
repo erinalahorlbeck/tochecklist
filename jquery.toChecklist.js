@@ -11,12 +11,26 @@ jQuery.fn.toChecklist = function(settings) {
 
 	// Provide default settings, which may be overridden if necessary.
 	settings = jQuery.extend({
+
 		// I want this plugin to be quick and easy to add. Ideally, the
 		// developer shouldn't be required to download or author extra CSS
 		// classes, but shouldn't be prevented from doing so if need be.
 		useIncludedPluginStyle : true,
 		addSearchBox : false,
-		listSelectedItems : false
+		listSelectedItems : false,
+
+		// If useIncludedPluginStyle is set to false, then you can override
+		// the css class-names that you want to use here, or just provide
+		// an external stylesheet with the same names.
+		cssChecklist : 'checklist',
+		cssChecklistHighlighted : 'checklistHighlighted',
+		cssEven : 'even',
+		cssOdd : 'odd',
+		cssChecked : 'checked',
+		cssDisabled : 'disabled',
+		cssListOfSelectedItems : 'listOfSelectedItems',
+		cssFocused : 'focused'
+
 	}, settings);
 
 	var error = function(msg) {
@@ -24,29 +38,25 @@ jQuery.fn.toChecklist = function(settings) {
 	}
 	
 	// Define our included plugin styles.
-	//
-	// The reason these are not defined in an external style sheet is because
-	// I want this plugin to be as quick and easy to add as possible.
-	// (I realize this isn't exactly "good" coding practice.)
+	// I realize this isn't exactly "good" coding practice to embed styles here;
+	// I want this plugin to be as quick and easy to add as possible, though.
 	jQuery('<style type="text/css">'
-		+'div.checklist, div.checklistHighlighted { overflow: auto }'
-		+'div.checklist { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; }'
-		+'div.checklistHighlighted { border: 1px solid gray; border-left: 3px solid #ffffa7; }'
-		+'ul.checklist { margin: 0; padding: 0; list-style-type: none; }'
-		+'li.even, li.odd, li.checked { padding: 3px; }'
-		+'li.even { background-color: white; }'
-		+'li.odd { background-color: #eef2f2; }'
-		+'li.even:hover, li.odd:hover { background-color: #dde; }'
-		+'li.checked  { background: #ffffa7; font-style: italic; }'
-		+'li.checked:hover { background: #ffff22; font-style: italic; }'
-		+'label.disabled { color: #ddd; }'
-		+'ul.listOfSelectedItems { height: 102px; overflow: auto; font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
+		+'div.'+settings.cssChecklist+', div.'+settings.cssChecklistHighlighted+' { overflow: auto }'
+		+'div.'+settings.cssChecklist+' { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; }'
+		+'div.'+settings.cssChecklistHighlighted+' { border: 1px solid gray; border-left: 3px solid #ffffa7; }'
+		+'ul.'+settings.cssChecklist+' { margin: 0; padding: 0; list-style-type: none; }'
+		+'li.'+settings.cssEven+', li.'+settings.cssOdd+', li.'+settings.cssChecked+' { padding: 3px; }'
+		+'li.'+settings.cssEven+' { background-color: white; }'
+		+'li.'+settings.cssOdd+' { background-color: #f7f7f7; }'
+		+'li.'+settings.cssEven+':hover, li.'+settings.cssOdd+':hover, li.'+settings.cssFocused+' { background-color: #dde; }'
+		+'li.'+settings.cssChecked+'  { background: #ffffa7; font-style: italic; }'
+		+'li.'+settings.cssChecked+':hover { background: #ffff22; font-style: italic; }'
+		+'label.'+settings.cssDisabled+' { color: #ddd; }'
+		+'ul.'+settings.cssListOfSelectedItems+' { height: 102px; overflow: auto; font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
 		+'</style>').appendTo('head');
 	
-	// Here, THIS refers to the jQuery stack object
-	// that contains all the target elements that
-	// are going to be converted to checklists.
-	// Let's loop over them and do the conversion.
+	// Here, THIS refers to the jQuery stack object that contains all the target elements that
+	// are going to be converted to checklists. Let's loop over them and do the conversion.
 	this.each(function() {
 	
 		// Hang on to the important information about this <select> element.
@@ -88,7 +98,10 @@ jQuery.fn.toChecklist = function(settings) {
 			jQuery(this).replaceWith('<li tabindex="0"><input type="checkbox" value="'+checkboxValue
 				+'" name="'+jSelectElemName+'" id="'+checkboxId+'" ' + selected + disabled
 				+' />&nbsp;<label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
-			jQuery('#'+checkboxId).css('display','none');
+			// Hide the checkboxes.
+			if (settings.useIncludedPluginStyle) {
+				jQuery('#'+checkboxId).css('display','none');
+			}
 		});
 		
 		var checklistName = jSelectElemName+'_'+'checklist';
@@ -107,6 +120,14 @@ jQuery.fn.toChecklist = function(settings) {
 			// Stripe the li's
 			jQuery('li:even',checklistDivId).addClass('even');
 			jQuery('li:odd',checklistDivId).addClass('odd');
+			// Emulate the :hover effect for keyboard navigation.
+			jQuery('li',checklistDivId).focus(function() {
+				jQuery(this).addClass('focused');
+		   	}).blur(function() {
+				jQuery(this).removeClass('focused');
+			}).mouseout(function() {
+				jQuery(this).removeClass('focused');
+			});
 			
 			// Highlight preselected ones.
 			jQuery('li',checklistDivId).each(function() {
@@ -116,7 +137,9 @@ jQuery.fn.toChecklist = function(settings) {
 			});
 
 		} else {
-			// @todo
+			/**
+			 * @todo
+			*/
 		}
 
 		// ============ Event handlers ===========
@@ -158,7 +181,9 @@ jQuery.fn.toChecklist = function(settings) {
 				if (settings.useIncludedPluginStyle) {
 					jQuery(this).addClass('checked');
 				} else {
-					// @todo
+					/**
+					 * @todo
+					*/
 				}
 			} else {
 				jQuery(this).removeClass('checked');
