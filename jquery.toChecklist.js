@@ -16,12 +16,13 @@ jQuery.fn.toChecklist = function(settings) {
 		// developer shouldn't be required to download or author extra CSS
 		// classes, but shouldn't be prevented from doing so if need be.
 		useIncludedPluginStyle : true,
-		addSearchBox : false,
+		addSearchBox : true,
 		listSelectedItems : false,
+		showCheckboxes : false, // clicking on a checkbox directly is still broken.
 
-		// If useIncludedPluginStyle is set to false, then you can override
-		// the css class-names that you want to use here, or just provide
-		// an external stylesheet with the same names.
+		// If useIncludedPluginStyle is set to false, you should provide an external
+		// stylesheet defining the class names below. In case of name conflicts,
+		// you can change the class names to whatever you want to use.
 		cssChecklist : 'checklist',
 		cssChecklistHighlighted : 'checklistHighlighted',
 		cssEven : 'even',
@@ -29,7 +30,9 @@ jQuery.fn.toChecklist = function(settings) {
 		cssChecked : 'checked',
 		cssDisabled : 'disabled',
 		cssListOfSelectedItems : 'listOfSelectedItems',
-		cssFocused : 'focused'
+		cssFocused : 'focused', // This cssFocused is for the li's in the checklist
+		cssFindInList : 'findInList',
+		cssBlurred : 'blurred' // This cssBlurred is for the findInList divs.
 
 	}, settings);
 
@@ -53,6 +56,9 @@ jQuery.fn.toChecklist = function(settings) {
 		+'li.'+settings.cssChecked+':hover { background: #ffff22; font-style: italic; }'
 		+'label.'+settings.cssDisabled+' { color: #ddd; }'
 		+'ul.'+settings.cssListOfSelectedItems+' { height: 102px; overflow: auto; font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
+		+'div.'+settings.cssFindInList+' { margin-bottom: .4em; }'
+		+'div.'+settings.cssFindInList+' input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }'
+		+'div.'+settings.cssFindInList+' input.'+settings.cssBlurred+' { color: gray; background-color: white; }'
 		+'</style>').appendTo('head');
 	
 	// Here, THIS refers to the jQuery stack object that contains all the target elements that
@@ -99,7 +105,7 @@ jQuery.fn.toChecklist = function(settings) {
 				+'" name="'+jSelectElemName+'" id="'+checkboxId+'" ' + selected + disabled
 				+' />&nbsp;<label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
-			if (settings.useIncludedPluginStyle) {
+			if (!settings.showCheckboxes) {
 				jQuery('#'+checkboxId).css('display','none');
 			}
 		});
@@ -109,12 +115,38 @@ jQuery.fn.toChecklist = function(settings) {
 		// Convert the outer SELECT elem to a <div>
 		jSelectElem.replaceWith('<div id="'+checklistName+'">'
 			+'<ul>'+jSelectElem.attr('innerHTML')+'</ul></div>');
+		var checklistDivId = '#'+checklistName;
+
+		// Add the findInList div, if settings call for it.
+		var findInListDivHeight = 0;
+		if (settings.addSearchBox) {
+
+			$(checklistDivId).before('<div class="findInList" id="'+jSelectElemName+'_findInListDiv">'
+				+'<input type="text" value="Type here to search list..." id="'
+				+jSelectElemName+'_findInList" class="'+settings.cssBlurred+'" /></div>');
+
+			// Attach event handlers to the input box...
+			$('#'+jSelectElemName+'_findInList').focus(function() {
+				// Remove "type to find..." when focusing.
+				this.value = "";
+				jQuery(this).removeClass(settings.cssBlurred);
+			}).blur(function() {
+				// Restore default text on blur.
+				this.value = this.defaultValue;
+				jQuery(this).addClass(settings.cssBlurred);
+			}).css('width',w); // Set width to same as original SELECT element.
+
+			// Compensate for the extra space the search box takes up by shortening the
+			// height of the checklist div.
+			var findInListDivHeight = jQuery('#'+jSelectElemName+'_findInListDiv').height();
+
+		}
 
 		// Add styles
-		var checklistDivId = '#'+checklistName;
+
 		if (settings.useIncludedPluginStyle) {
 
-			jQuery(checklistDivId).addClass('checklist').height(h).width(w);
+			jQuery(checklistDivId).addClass('checklist').height(h - findInListDivHeight).width(w);
 			jQuery('ul',checklistDivId).addClass('checklist');
 
 			// Stripe the li's
@@ -123,7 +155,7 @@ jQuery.fn.toChecklist = function(settings) {
 			// Emulate the :hover effect for keyboard navigation.
 			jQuery('li',checklistDivId).focus(function() {
 				jQuery(this).addClass('focused');
-		   	}).blur(function() {
+		   	}).blur(function(event) {
 				jQuery(this).removeClass('focused');
 			}).mouseout(function() {
 				jQuery(this).removeClass('focused');
