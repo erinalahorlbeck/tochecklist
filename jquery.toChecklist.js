@@ -18,7 +18,7 @@ jQuery.fn.toChecklist = function(settings) {
 		useIncludedPluginStyle : true,
 		addSearchBox : true,
 		listSelectedItems : false,
-		showCheckboxes : false, // clicking on a checkbox directly is still broken.
+		showCheckboxes : true, // clicking on a checkbox directly is still broken.
 
 		// If useIncludedPluginStyle is set to false, you should provide an external
 		// stylesheet defining the class names below. In case of name conflicts,
@@ -107,6 +107,8 @@ jQuery.fn.toChecklist = function(settings) {
 			// Hide the checkboxes.
 			if (!settings.showCheckboxes) {
 				jQuery('#'+checkboxId).css('display','none');
+			} else {
+				jQuery('#'+checkboxId).click(function() { alert('preventing default!'); });	
 			}
 		});
 		
@@ -192,21 +194,14 @@ jQuery.fn.toChecklist = function(settings) {
 			// if the user presses enter or space.
 			if (event.type == 'keydown' && event.keyCode != 13 && event.keyCode != 32) return;
 
-			// Make sure that the event handler isn't triggered
-			// twice if clicking directly on checkbox or label.
-			/*
-			var preventDuplicateAction = function(event) {
-				event.cancelBubble = true;
-				if (event.stopPropagation) event.stopPropagation();
-			}
-
-			jQuery('label',this).click(preventDuplicateAction);
-			*/
-
 			// Not sure if unbind() here removes default action, but that's what I want.
 			jQuery('label',this).unbind(); 
-			jQuery('input',this).trigger('click');
-			
+			// Make sure that the event handler isn't triggered twice (thus preventing the user
+			// from actually checking the box) if clicking directly on checkbox or label.
+			// Note: the && is not a mistake here. It should not be ||
+			if (event.target.tagName != 'INPUT' && event.target.tagName != 'LABEL') {
+				jQuery('input',this).trigger('click');
+			}
 
 			// Change the styling of the row to be checked or unchecked.
 			if (jQuery('input',this).attr('checked')) {
@@ -229,7 +224,5 @@ jQuery.fn.toChecklist = function(settings) {
 		toggleDivGlow();
 
 	});
-	
-	
 
 };
