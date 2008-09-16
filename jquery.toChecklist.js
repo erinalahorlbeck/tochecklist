@@ -89,6 +89,12 @@ jQuery.fn.toChecklist = function(settings) {
 		// with checkboxes and labels.		
 		jQuery('option',jSelectElem).each(function() {
 			var checkboxValue = jQuery(this).attr('value');
+			// The option tag may not have had a "value" attribute set. In this case,
+			// Firefox automatically uses the innerHTML instead, but we need to set it
+			// manually for IE.
+			if (checkboxValue == '') {
+				checkboxValue = this.innerHTML;
+			}
 			var checkboxId = jSelectElemName+'_'+checkboxValue;
 			var labelText = jQuery(this).attr('innerHTML');
 			var selected = '';
