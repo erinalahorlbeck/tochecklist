@@ -155,18 +155,27 @@ jQuery.fn.toChecklist = function(settings) {
 					if ( !$(this).is(':disabled') ) {
 						var curItem = $(this).html().toLowerCase();
 						var typedText = textbox.value.toLowerCase();
-						var curLabelObj = this;
+						
 						if ( curItem.indexOf(typedText) == 0 ) { // If the label text begins
 						                                         // with the text typed by user...
+							var curLabelObj = this;
 							var scrollValue = $(this).parent().get(0).offsetTop; // Can't use jquery offset()
 							$(checklistDivId).attr('scrollTop',scrollValue);
 							// We want to be able to simply press tab to move the focus from the
 							// search text box to the item in the list that we found with it.
-							$(textbox).bind('keydown.tabToFocus', function(event) {
-								if (event.keyCode == 9) {						
-									curLabelObj.parentNode.focus();
+							$(textbox).unbind('keydown.tabToFocus').bind('keydown.tabToFocus', function(event) {
+								if (event.keyCode == 9) {
+									event.preventDefault(); // No double tabs, please...
+									// Focus and then provide an event that will let the user press shift-tab
+									// to get back to the search box.
+									$(curLabelObj.parentNode).focus().bind('keydown.tabBack', function(event) {
+										if (event.keyCode == 9 && event.shiftKey) {
+											event.preventDefault(); // No double tabs, please...
+											textbox.focus();
+											$(this).unbind('keydown.tabBack');
+										}
+									});
 									$(this).unbind('keydown.tabToFocus');
-									return false;
 								}
 							});
 							return false; // Equivalent to "break" within the each() function.
