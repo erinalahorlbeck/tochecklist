@@ -142,6 +142,52 @@ jQuery.fn.toChecklist = function(settings) {
 				// Restore default text on blur.
 				this.value = this.defaultValue;
 				jQuery(this).addClass(settings.cssBlurred);
+			}).keyup(function() {
+				// Search for the actual text.
+				var textbox = this; // holder
+				if (this.value == '') {
+					$(checklistDivId).attr('scrollTop',0);
+					$(this).unbind('keydown.tabToFocus');
+					return false;
+				}
+				// Scroll to the text, unless it's disabled.
+				$('label',checklistDivId).each(function() {
+					if ( !$(this).is(':disabled') ) {
+						var curItem = $(this).html().toLowerCase();
+						var typedText = textbox.value.toLowerCase();
+						var curLabelObj = this;
+						if ( curItem.indexOf(typedText) == 0 ) { // If the label text begins
+						                                         // with the text typed by user...
+							var scrollValue = $(this).parent().get(0).offsetTop; // Can't use jquery offset()
+							$(checklistDivId).attr('scrollTop',scrollValue);
+							// We want to be able to simply press tab to move the focus from the
+							// search text box to the item in the list that we found with it.
+							$(textbox).bind('keydown.tabToFocus', function(event) {
+								if (event.keyCode == 9) {						
+									curLabelObj.parentNode.focus();
+									$(this).unbind('keydown.tabToFocus');
+									return false;
+								}
+							});
+							return false; // Equivalent to "break" within the each() function.
+						}
+					}
+				});
+				return;
+				/*
+				if ( labels[i].className != 'disabled' ) {
+						var curItem = labels[i].innerHTML.trim();
+						curItem = curItem.toLowerCase();
+						if (curItem.indexOf(textbox.value) == 0 ) {
+							var scrollValue = labels[i].parentNode.offsetTop;
+							// Adjust the offsetTop value for non-IE browsers
+							scrollValue -= (ie7 || ie6)? 0 : 33;
+							checklist.scrollTop = scrollValue;
+							break;
+						}
+					}
+				}*/
+			
 			}).css('width',w); // Set width to same as original SELECT element.
 
 			// Compensate for the extra space the search box takes up by shortening the
@@ -197,8 +243,19 @@ jQuery.fn.toChecklist = function(settings) {
 		var check = function(event) {
 			
 			// This needs to be keyboard accessible too. Only activate it
-			// if the user presses enter or space.
-			if (event.type == 'keydown' && event.keyCode != 13 && event.keyCode != 32) return;
+			// if the user presses space (enter typically submits a form,
+			// so is nto safe).
+			if (event.type == 'keydown' && event.keyCode != 32) return;
+			
+			// Next on the keyboard accessibility agenda, we need to make sure that if
+			// the user presses tab or shift-tab, or the up and down arrows, the next/previous
+			// LI will be selected, and not the next checkbox or label element or whatever.
+			/*
+			if (event.keyCode == 32) {
+				event.cancelBubble = true;
+				event.stopPropagation();
+			}
+			*/
 
 			// Not sure if unbind() here removes default action, but that's what I want.
 			jQuery('label',this).unbind(); 
@@ -225,8 +282,17 @@ jQuery.fn.toChecklist = function(settings) {
 			toggleDivGlow();
 
 		};
+		
+		// Accessibility, primarily for IE
+		var handFocusToLI = function() {
+			// Make sure that labels and checkboxes that receive
+			// focus divert the focus to the LI itself.
+			jQuery(this).parent().focus();
+		};
 
 		jQuery('li',checklistDivId).click(check).keydown(check);
+		jQuery('label',checklistDivId).focus(handFocusToLI);
+		jQuery('input',checklistDivId).focus(handFocusToLI);
 		toggleDivGlow();
 
 	});
