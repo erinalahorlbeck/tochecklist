@@ -44,7 +44,7 @@ jQuery.fn.toChecklist = function(settings) {
 	// I realize this isn't exactly "good" coding practice to embed styles here;
 	// I want this plugin to be as quick and easy to add as possible, though.
 	jQuery('<style type="text/css">'
-		+'div.'+settings.cssChecklist+', div.'+settings.cssChecklistHighlighted+' { overflow: auto }'
+		+'div.'+settings.cssChecklist+', div.'+settings.cssChecklistHighlighted+' { overflow-y: auto; overflow-x: hidden; }'
 		+'div.'+settings.cssChecklist+' { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; }'
 		+'div.'+settings.cssChecklistHighlighted+' { border: 1px solid gray; border-left: 3px solid #ffffa7; }'
 		+'ul.'+settings.cssChecklist+' { margin: 0; padding: 0; list-style-type: none; }'
@@ -56,7 +56,7 @@ jQuery.fn.toChecklist = function(settings) {
 		+'li.'+settings.cssChecked+':hover { background: #ffff22; font-style: italic; }'
 		+'label.'+settings.cssDisabled+' { color: #ddd; }'
 		+'ul.'+settings.cssListOfSelectedItems+' { height: 102px; overflow: auto; font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
-		+'div.'+settings.cssFindInList+' { margin-bottom: .4em; }'
+		+'div.'+settings.cssFindInList+' { margin-bottom: 5px; }'
 		+'div.'+settings.cssFindInList+' input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }'
 		+'div.'+settings.cssFindInList+' input.'+settings.cssBlurred+' { color: gray; background-color: white; }'
 		+'</style>').appendTo('head');
@@ -71,6 +71,8 @@ jQuery.fn.toChecklist = function(settings) {
 		if (settings.useIncludedPluginStyle) {
 			var h = jSelectElem.height();
 			var w = jSelectElem.width();
+			// We have to account for the extra thick left border.
+			if (settings.useIncludedPluginStyle) w -= 4;
 //			alert(h + ' ' + w);
 //			var margin = jSelectElem.css('margin-top') +' '+ jSelectElem.css('margin-right')
 //				+' '+ jSelectElem.css('margin-bottom') +' '+ jSelectElem.css('margin-left');
@@ -124,6 +126,11 @@ jQuery.fn.toChecklist = function(settings) {
 		jSelectElem.replaceWith('<div id="'+checklistName+'">'
 			+'<ul>'+jSelectElem.attr('innerHTML')+'</ul></div>');
 		var checklistDivId = '#'+checklistName;
+		
+		// We MUST set the checklist div's position to either 'relative' or 'absolute'
+		// (default is 'static'), or else Firefox will think the offsetParent of the inner
+		// elements is BODY instead of DIV.
+		jQuery(checklistDivId).css('position','relative');
 
 		// Add the findInList div, if settings call for it.
 		var findInListDivHeight = 0;
@@ -133,8 +140,10 @@ jQuery.fn.toChecklist = function(settings) {
 				+'<input type="text" value="Type here to search list..." id="'
 				+jSelectElemName+'_findInList" class="'+settings.cssBlurred+'" /></div>');
 
+			// Set width to same as original SELECT element.
+			$('#'+jSelectElemName+'_findInList').css('width',w)
 			// Attach event handlers to the input box...
-			$('#'+jSelectElemName+'_findInList').focus(function() {
+			.focus(function() {
 				// Remove "type to find..." when focusing.
 				this.value = "";
 				jQuery(this).removeClass(settings.cssBlurred);
@@ -159,7 +168,7 @@ jQuery.fn.toChecklist = function(settings) {
 						if ( curItem.indexOf(typedText) == 0 ) { // If the label text begins
 						                                         // with the text typed by user...
 							var curLabelObj = this;
-							var scrollValue = $(this).parent().get(0).offsetTop; // Can't use jquery offset()
+							var scrollValue = this.parentNode.offsetTop; // Can't use jquery offset()
 							$(checklistDivId).attr('scrollTop',scrollValue);
 							// We want to be able to simply press tab to move the focus from the
 							// search text box to the item in the list that we found with it.
@@ -183,25 +192,12 @@ jQuery.fn.toChecklist = function(settings) {
 					}
 				});
 				return;
-				/*
-				if ( labels[i].className != 'disabled' ) {
-						var curItem = labels[i].innerHTML.trim();
-						curItem = curItem.toLowerCase();
-						if (curItem.indexOf(textbox.value) == 0 ) {
-							var scrollValue = labels[i].parentNode.offsetTop;
-							// Adjust the offsetTop value for non-IE browsers
-							scrollValue -= (ie7 || ie6)? 0 : 33;
-							checklist.scrollTop = scrollValue;
-							break;
-						}
-					}
-				}*/
 			
-			}).css('width',w); // Set width to same as original SELECT element.
+			});
 
 			// Compensate for the extra space the search box takes up by shortening the
-			// height of the checklist div.
-			var findInListDivHeight = jQuery('#'+jSelectElemName+'_findInListDiv').height();
+			// height of the checklist div. Also account for margin below the search box.
+			findInListDivHeight = jQuery('#'+jSelectElemName+'_findInListDiv').height() + 3;
 
 		}
 
@@ -255,6 +251,9 @@ jQuery.fn.toChecklist = function(settings) {
 			// if the user presses space (enter typically submits a form,
 			// so is nto safe).
 			if (event.type == 'keydown' && event.keyCode != 32) return;
+			if (event.type == 'keydown' && event.keyCode == 32) {
+				event.preventDefault();	
+			}
 			
 			// Next on the keyboard accessibility agenda, we need to make sure that if
 			// the user presses tab or shift-tab, or the up and down arrows, the next/previous
