@@ -135,56 +135,66 @@ jQuery.fn.toChecklist = function(settings) {
 		// Add the findInList div, if settings call for it.
 		var findInListDivHeight = 0;
 		if (settings.addSearchBox) {
+			
+			var focusSearchBox = function() {
+				// Remove "type to find..." when focusing.
+				this.value = "";
+				jQuery(this).removeClass(settings.cssBlurred);
+			}
+			var blurSearchBox =function() {
+				// Restore default text on blur.
+				this.value = this.defaultValue;
+				jQuery(this).addClass(settings.cssBlurred);
+			}
 
-			$(checklistDivId).before('<div class="findInList" id="'+jSelectElemName+'_findInListDiv">'
+			jQuery(checklistDivId).before('<div class="findInList" id="'+jSelectElemName+'_findInListDiv">'
 				+'<input type="text" value="Type here to search list..." id="'
 				+jSelectElemName+'_findInList" class="'+settings.cssBlurred+'" /></div>');
 
 			// Set width to same as original SELECT element.
-			$('#'+jSelectElemName+'_findInList').css('width',w)
+			jQuery('#'+jSelectElemName+'_findInList').css('width',w)
 			// Attach event handlers to the input box...
-			.focus(function() {
-				// Remove "type to find..." when focusing.
-				this.value = "";
-				jQuery(this).removeClass(settings.cssBlurred);
-			}).blur(function() {
-				// Restore default text on blur.
-				this.value = this.defaultValue;
-				jQuery(this).addClass(settings.cssBlurred);
-			}).keyup(function() {
+			.bind('focus.focusSearchBox', focusSearchBox)
+			.bind('blur.blurSearchBox',blurSearchBox)
+			.keyup(function(event) {
 				// Search for the actual text.
 				var textbox = this; // holder
 				if (this.value == '') {
-					$(checklistDivId).attr('scrollTop',0);
-					$(this).unbind('keydown.tabToFocus');
+					jQuery(checklistDivId).attr('scrollTop',0);
+					jQuery(this).unbind('keydown.tabToFocus');
 					return false;
 				}
 				// Scroll to the text, unless it's disabled.
-				$('label',checklistDivId).each(function() {
-					if ( !$(this).is(':disabled') ) {
-						var curItem = $(this).html().toLowerCase();
+				jQuery('label',checklistDivId).each(function() {
+					if ( !jQuery(this).is(':disabled') ) {
+						var curItem = jQuery(this).html().toLowerCase();
 						var typedText = textbox.value.toLowerCase();
 						
 						if ( curItem.indexOf(typedText) == 0 ) { // If the label text begins
 						                                         // with the text typed by user...
 							var curLabelObj = this;
 							var scrollValue = this.parentNode.offsetTop; // Can't use jquery offset()
-							$(checklistDivId).attr('scrollTop',scrollValue);
+							jQuery(checklistDivId).attr('scrollTop',scrollValue);
 							// We want to be able to simply press tab to move the focus from the
 							// search text box to the item in the list that we found with it.
-							$(textbox).unbind('keydown.tabToFocus').bind('keydown.tabToFocus', function(event) {
+							jQuery(textbox).unbind('blur.blurSearchBox').unbind('keydown.tabToFocus')
+							.bind('keydown.tabToFocus', function(event) {
 								if (event.keyCode == 9) {
 									event.preventDefault(); // No double tabs, please...
 									// Focus and then provide an event that will let the user press shift-tab
 									// to get back to the search box.
-									$(curLabelObj.parentNode).focus().bind('keydown.tabBack', function(event) {
+									jQuery(curLabelObj.parentNode).focus().bind('keydown.tabBack', function(event) {
 										if (event.keyCode == 9 && event.shiftKey) {
 											event.preventDefault(); // No double tabs, please...
-											textbox.focus();
-											$(this).unbind('keydown.tabBack');
+											jQuery(textbox)
+											.unbind('focus.focusSearchBox').focus()
+											.removeClass(settings.cssBlurred)
+											.bind('focus.focusSearchBox',focusSearchBox)
+											.bind('blur.blurSearchBox',blurSearchBox);
+											jQuery(this).unbind('keydown.tabBack');
 										}
 									});
-									$(this).unbind('keydown.tabToFocus');
+									jQuery(this).unbind('keydown.tabToFocus');
 								}
 							});
 							return false; // Equivalent to "break" within the each() function.
@@ -247,12 +257,24 @@ jQuery.fn.toChecklist = function(settings) {
 		// Check/uncheck boxes
 		var check = function(event) {
 			
-			// This needs to be keyboard accessible too. Only activate it
-			// if the user presses space (enter typically submits a form,
-			// so is nto safe).
-			if (event.type == 'keydown' && event.keyCode != 32) return;
-			if (event.type == 'keydown' && event.keyCode == 32) {
-				event.preventDefault();	
+			// This needs to be keyboard accessible too. Only check the box it if the user
+			// presses space (enter typically submits a form, so is not safe).
+			if (event.type == 'keydown') {
+				// Pressing spacebar in IE and Opera triggers a Page Down. We don't want that
+				// to happen in this case. Opera doesn't respond to this, unfortunately...
+				// We also want to prevent form submission with enter key.
+				if (event.keyCode == 32 || event.keyCode == 13) event.preventDefault();
+				// Tab keys need to move to the next item in IE, Opera, Safari, Chrome, etc.
+				if (event.keyCode == 9 && !event.shiftKey) {
+					event.preventDefault();
+					// Move to the next LI
+					jQuery(this).unbind('keydown.tabBack').blur().next().focus();
+					
+				} else if (event.keyCode == 9 && event.shiftKey) {
+					// Move to the previous LI
+				}
+
+				if (event.keyCode != 32) return;
 			}
 			
 			// Next on the keyboard accessibility agenda, we need to make sure that if
