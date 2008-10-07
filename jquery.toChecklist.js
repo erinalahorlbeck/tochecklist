@@ -16,9 +16,10 @@ jQuery.fn.toChecklist = function(settings) {
 		// developer shouldn't be required to download or author extra CSS
 		// classes, but shouldn't be prevented from doing so if need be.
 		useIncludedPluginStyle : true,
+		addScrollBar : true,
 		addSearchBox : true,
 		listSelectedItems : false,
-		showCheckboxes : true, // clicking on a checkbox directly is still broken.
+		showCheckboxes : true,
 
 		// If useIncludedPluginStyle is set to false, you should provide an external
 		// stylesheet defining the class names below. In case of name conflicts,
@@ -40,11 +41,14 @@ jQuery.fn.toChecklist = function(settings) {
 		alert("jQuery Plugin Error (Plugin: toChecklist)\n\n"+msg);
 	}
 	
+	var overflowProperty = (settings.addScrollBar)? 'overflow-y: auto; overflow-x: hidden;' : '';
+	
 	// Define our included plugin styles.
-	// I realize this isn't exactly "good" coding practice to embed styles here;
-	// I want this plugin to be as quick and easy to add as possible, though.
+	// I realize this isn't exactly "good" coding practice (embedding styles here, instead
+	// of in a separate stylesheet), but  I want this plugin to be as quick and easy to add
+	// as possible.
 	jQuery('<style type="text/css">'
-		+'div.'+settings.cssChecklist+', div.'+settings.cssChecklistHighlighted+' { overflow-y: auto; overflow-x: hidden; }'
+		+'div.'+settings.cssChecklist+', div.'+settings.cssChecklistHighlighted+' { '+overflowProperty+' }'
 		+'div.'+settings.cssChecklist+' { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; }'
 		+'div.'+settings.cssChecklistHighlighted+' { border: 1px solid gray; border-left: 3px solid #ffffa7; }'
 		+'ul.'+settings.cssChecklist+' { margin: 0; padding: 0; list-style-type: none; }'
@@ -55,7 +59,7 @@ jQuery.fn.toChecklist = function(settings) {
 		+'li.'+settings.cssChecked+'  { background: #ffffa7; font-style: italic; }'
 		+'li.'+settings.cssChecked+':hover { background: #ffff22; font-style: italic; }'
 		+'label.'+settings.cssDisabled+' { color: #ddd; }'
-		+'ul.'+settings.cssListOfSelectedItems+' { height: 102px; overflow: auto; font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
+		+'ul.'+settings.cssListOfSelectedItems+' { height: 102px;'+overflowProperty+'font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
 		+'div.'+settings.cssFindInList+' { margin-bottom: 5px; }'
 		+'div.'+settings.cssFindInList+' input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }'
 		+'div.'+settings.cssFindInList+' input.'+settings.cssBlurred+' { color: gray; background-color: white; }'
@@ -69,7 +73,7 @@ jQuery.fn.toChecklist = function(settings) {
 		var jSelectElem = jQuery(this);
 		var jSelectElemName = jSelectElem.attr('name');
 		if (settings.useIncludedPluginStyle) {
-			var h = jSelectElem.height();
+			var h = (settings.addScrollBar)? jSelectElem.height() : '100%';
 			var w = jSelectElem.width();
 			// We have to account for the extra thick left border.
 			if (settings.useIncludedPluginStyle) w -= 4;
