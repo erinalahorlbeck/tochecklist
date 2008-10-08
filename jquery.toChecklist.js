@@ -17,7 +17,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		// classes, but shouldn't be prevented from doing so if need be.
 		useIncludedPluginStyle : true,
 		addScrollBar : true,
-		addSearchBox : true,
+		addSearchBox : false,
 		showCheckboxes : true,
 		listSelectedItems : false,
 
@@ -75,7 +75,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		var jSelectElem = jQuery(this);
 		var jSelectElemName = jSelectElem.attr('name');
 		if (o.useIncludedPluginStyle) {
-			var h = (o.addScrollBar)? jSelectElem.height() : '100%';
+			var h = jSelectElem.height(); /* : '100%'; */
 			var w = jSelectElem.width();
 			// We have to account for the extra thick left border.
 			if (o.useIncludedPluginStyle) w -= 4;
@@ -224,7 +224,13 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 		// Add styles
 
-		jQuery(checklistDivId).addClass(o.cssChecklist).height(h - findInListDivHeight).width(w);
+		
+		jQuery(checklistDivId).addClass(o.cssChecklist);
+		if (o.addScrollBar) {
+			jQuery(checklistDivId).height(h - findInListDivHeight).width(w);
+		} else {
+			jQuery(checklistDivId).height('100%').width(w);
+		}
 		jQuery('ul',checklistDivId).addClass(o.cssChecklist);
 
 		// Stripe the li's
