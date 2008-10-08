@@ -7,10 +7,10 @@
  *
 */
 
-jQuery.fn.toChecklist = function(settings) {
+jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 	// Provide default settings, which may be overridden if necessary.
-	settings = jQuery.extend({
+	o = jQuery.extend({
 
 		// I want this plugin to be quick and easy to add. Ideally, the
 		// developer shouldn't be required to download or author extra CSS
@@ -18,8 +18,8 @@ jQuery.fn.toChecklist = function(settings) {
 		useIncludedPluginStyle : true,
 		addScrollBar : true,
 		addSearchBox : true,
-		listSelectedItems : false,
 		showCheckboxes : true,
+		listSelectedItems : false,
 
 		// If useIncludedPluginStyle is set to false, you should provide an external
 		// stylesheet defining the class names below. In case of name conflicts,
@@ -35,35 +35,37 @@ jQuery.fn.toChecklist = function(settings) {
 		cssFindInList : 'findInList',
 		cssBlurred : 'blurred' // This cssBlurred is for the findInList divs.
 
-	}, settings);
+	}, o);
 
 	var error = function(msg) {
 		alert("jQuery Plugin Error (Plugin: toChecklist)\n\n"+msg);
 	}
 	
-	var overflowProperty = (settings.addScrollBar)? 'overflow-y: auto; overflow-x: hidden;' : '';
+	var overflowProperty = (o.addScrollBar)? 'overflow-y: auto; overflow-x: hidden;' : '';
 	
-	// Define our included plugin styles.
-	// I realize this isn't exactly "good" coding practice (embedding styles here, instead
-	// of in a separate stylesheet), but  I want this plugin to be as quick and easy to add
-	// as possible.
-	jQuery('<style type="text/css">'
-		+'div.'+settings.cssChecklist+', div.'+settings.cssChecklistHighlighted+' { '+overflowProperty+' }'
-		+'div.'+settings.cssChecklist+' { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; }'
-		+'div.'+settings.cssChecklistHighlighted+' { border: 1px solid gray; border-left: 3px solid #ffffa7; }'
-		+'ul.'+settings.cssChecklist+' { margin: 0; padding: 0; list-style-type: none; }'
-		+'li.'+settings.cssEven+', li.'+settings.cssOdd+', li.'+settings.cssChecked+' { padding: 3px; }'
-		+'li.'+settings.cssEven+' { background-color: white; }'
-		+'li.'+settings.cssOdd+' { background-color: #f7f7f7; }'
-		+'li.'+settings.cssEven+':hover, li.'+settings.cssOdd+':hover, li.'+settings.cssFocused+' { background-color: #dde; }'
-		+'li.'+settings.cssChecked+'  { background: #ffffa7; font-style: italic; }'
-		+'li.'+settings.cssChecked+':hover { background: #ffff22; font-style: italic; }'
-		+'label.'+settings.cssDisabled+' { color: #ddd; }'
-		+'ul.'+settings.cssListOfSelectedItems+' { height: 102px;'+overflowProperty+'font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
-		+'div.'+settings.cssFindInList+' { margin-bottom: 5px; }'
-		+'div.'+settings.cssFindInList+' input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }'
-		+'div.'+settings.cssFindInList+' input.'+settings.cssBlurred+' { color: gray; background-color: white; }'
-		+'</style>').appendTo('head');
+	if (o.useIncludedPluginStyle) {
+		// Define our included plugin styles.
+		// I realize this isn't exactly "good" coding practice (embedding styles here, instead
+		// of in a separate stylesheet), but  I want this plugin to be as quick and easy to add
+		// as possible.
+		jQuery('<style type="text/css">'
+			+'div.'+o.cssChecklist+', div.'+o.cssChecklistHighlighted+' { '+overflowProperty+' }'
+			+'div.'+o.cssChecklist+' { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; }'
+			+'div.'+o.cssChecklistHighlighted+' { border: 1px solid gray; border-left: 3px solid #ffffa7; }'
+			+'ul.'+o.cssChecklist+' { margin: 0; padding: 0; list-style-type: none; }'
+			+'li.'+o.cssEven+', li.'+o.cssOdd+', li.'+o.cssChecked+' { padding: 3px; }'
+			+'li.'+o.cssEven+' { background-color: white; }'
+			+'li.'+o.cssOdd+' { background-color: #f7f7f7; }'
+			+'li.'+o.cssEven+':hover, li.'+o.cssOdd+':hover, li.'+o.cssFocused+' { background-color: #dde; }'
+			+'li.'+o.cssChecked+'  { background: #ffffa7; font-style: italic; }'
+			+'li.'+o.cssChecked+':hover { background: #ffff22; font-style: italic; }'
+			+'label.'+o.cssDisabled+' { color: #ddd; }'
+			+'ul.'+o.cssListOfSelectedItems+' { height: 102px;'+overflowProperty+'font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
+			+'div.'+o.cssFindInList+' { margin-bottom: 5px; }'
+			+'div.'+o.cssFindInList+' input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }'
+			+'div.'+o.cssFindInList+' input.'+o.cssBlurred+' { color: gray; background-color: white; }'
+			+'</style>').appendTo('head');
+	}
 	
 	// Here, THIS refers to the jQuery stack object that contains all the target elements that
 	// are going to be converted to checklists. Let's loop over them and do the conversion.
@@ -72,11 +74,11 @@ jQuery.fn.toChecklist = function(settings) {
 		// Hang on to the important information about this <select> element.
 		var jSelectElem = jQuery(this);
 		var jSelectElemName = jSelectElem.attr('name');
-		if (settings.useIncludedPluginStyle) {
-			var h = (settings.addScrollBar)? jSelectElem.height() : '100%';
+		if (o.useIncludedPluginStyle) {
+			var h = (o.addScrollBar)? jSelectElem.height() : '100%';
 			var w = jSelectElem.width();
 			// We have to account for the extra thick left border.
-			if (settings.useIncludedPluginStyle) w -= 4;
+			if (o.useIncludedPluginStyle) w -= 4;
 //			alert(h + ' ' + w);
 //			var margin = jSelectElem.css('margin-top') +' '+ jSelectElem.css('margin-right')
 //				+' '+ jSelectElem.css('margin-bottom') +' '+ jSelectElem.css('margin-left');
@@ -101,6 +103,8 @@ jQuery.fn.toChecklist = function(settings) {
 			if (checkboxValue == '') {
 				checkboxValue = this.innerHTML;
 			}
+			checkboxValue = checkboxValue.replace(/ /,'_');
+			
 			var checkboxId = jSelectElemName+'_'+checkboxValue;
 			var labelText = jQuery(this).attr('innerHTML');
 			var selected = '';
@@ -117,7 +121,7 @@ jQuery.fn.toChecklist = function(settings) {
 				+'" name="'+jSelectElemName+'" id="'+checkboxId+'" ' + selected + disabled
 				+' />&nbsp;<label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
-			if (!settings.showCheckboxes) {
+			if (!o.showCheckboxes) {
 				jQuery('#'+checkboxId).css('display','none');
 			} else {
 				jQuery('#'+checkboxId).click(function() { alert('preventing default!'); });	
@@ -138,25 +142,28 @@ jQuery.fn.toChecklist = function(settings) {
 
 		// Add the findInList div, if settings call for it.
 		var findInListDivHeight = 0;
-		if (settings.addSearchBox) {
+		if (o.addSearchBox) {
 			
 			var focusSearchBox = function() {
 				// Remove "type to find..." when focusing.
 				this.value = "";
-				jQuery(this).removeClass(settings.cssBlurred);
+				jQuery(this).removeClass(o.cssBlurred);
 			}
 			var blurSearchBox =function() {
 				// Restore default text on blur.
 				this.value = this.defaultValue;
-				jQuery(this).addClass(settings.cssBlurred);
+				jQuery(this).addClass(o.cssBlurred);
 			}
 
 			jQuery(checklistDivId).before('<div class="findInList" id="'+jSelectElemName+'_findInListDiv">'
 				+'<input type="text" value="Type here to search list..." id="'
-				+jSelectElemName+'_findInList" class="'+settings.cssBlurred+'" /></div>');
+				+jSelectElemName+'_findInList" class="'+o.cssBlurred+'" /></div>');
 
 			// Set width to same as original SELECT element.
-			jQuery('#'+jSelectElemName+'_findInList').css('width',w)
+			if (o.useIncludedPluginStyle) {
+				jQuery('#'+jSelectElemName+'_findInList').css('width',w);
+			}
+			jQuery('#'+jSelectElemName+'_findInList')
 			// Attach event handlers to the input box...
 			.bind('focus.focusSearchBox', focusSearchBox)
 			.bind('blur.blurSearchBox',blurSearchBox)
@@ -192,7 +199,7 @@ jQuery.fn.toChecklist = function(settings) {
 											event.preventDefault(); // No double tabs, please...
 											jQuery(textbox)
 											.unbind('focus.focusSearchBox').focus()
-											.removeClass(settings.cssBlurred)
+											.removeClass(o.cssBlurred)
 											.bind('focus.focusSearchBox',focusSearchBox)
 											.bind('blur.blurSearchBox',blurSearchBox);
 											jQuery(this).unbind('keydown.tabBack');
@@ -217,44 +224,36 @@ jQuery.fn.toChecklist = function(settings) {
 
 		// Add styles
 
-		if (settings.useIncludedPluginStyle) {
+		jQuery(checklistDivId).addClass(o.cssChecklist).height(h - findInListDivHeight).width(w);
+		jQuery('ul',checklistDivId).addClass(o.cssChecklist);
 
-			jQuery(checklistDivId).addClass('checklist').height(h - findInListDivHeight).width(w);
-			jQuery('ul',checklistDivId).addClass('checklist');
-
-			// Stripe the li's
-			jQuery('li:even',checklistDivId).addClass('even');
-			jQuery('li:odd',checklistDivId).addClass('odd');
-			// Emulate the :hover effect for keyboard navigation.
-			jQuery('li',checklistDivId).focus(function() {
-				jQuery(this).addClass('focused');
-		   	}).blur(function(event) {
-				jQuery(this).removeClass('focused');
-			}).mouseout(function() {
-				jQuery(this).removeClass('focused');
-			});
+		// Stripe the li's
+		jQuery('li:even',checklistDivId).addClass(o.cssEven);
+		jQuery('li:odd',checklistDivId).addClass(o.cssOdd);
+		// Emulate the :hover effect for keyboard navigation.
+		jQuery('li',checklistDivId).focus(function() {
+			jQuery(this).addClass(o.cssFocused);
+		}).blur(function(event) {
+			jQuery(this).removeClass(o.cssFocused);
+		}).mouseout(function() {
+			jQuery(this).removeClass(o.cssFocused);
+		});
 			
-			// Highlight preselected ones.
-			jQuery('li',checklistDivId).each(function() {
-				if (jQuery('input',this).attr('checked')) {
-					jQuery(this).addClass('checked');	
-				}
-			});
-
-		} else {
-			/**
-			 * @todo
-			*/
-		}
+		// Highlight preselected ones.
+		jQuery('li',checklistDivId).each(function() {
+			if (jQuery('input',this).attr('checked')) {
+				jQuery(this).addClass(o.cssChecked);	
+			}
+		});
 
 		// ============ Event handlers ===========
 
 		var toggleDivGlow = function() {
 			// Make sure the div is glowing if something is checked in it.			
-			if (jQuery('li',checklistDivId).hasClass('checked')) {
-				jQuery(checklistDivId).addClass('checklistHighlighted');
+			if (jQuery('li',checklistDivId).hasClass(o.cssChecked)) {
+				jQuery(checklistDivId).addClass(o.cssChecklistHighlighted);
 			} else {
-				jQuery(checklistDivId).removeClass('checklistHighlighted');
+				jQuery(checklistDivId).removeClass(o.cssChecklistHighlighted);
 			}
 		}
 
@@ -302,15 +301,9 @@ jQuery.fn.toChecklist = function(settings) {
 
 			// Change the styling of the row to be checked or unchecked.
 			if (jQuery('input',this).attr('checked')) {
-				if (settings.useIncludedPluginStyle) {
-					jQuery(this).addClass('checked');
-				} else {
-					/**
-					 * @todo
-					*/
-				}
+				jQuery(this).addClass(o.cssChecked);
 			} else {
-				jQuery(this).removeClass('checked');
+				jQuery(this).removeClass(o.cssChecked);
 			}
 			
 			toggleDivGlow();
@@ -328,6 +321,15 @@ jQuery.fn.toChecklist = function(settings) {
 		jQuery('label',checklistDivId).focus(handFocusToLI);
 		jQuery('input',checklistDivId).focus(handFocusToLI);
 		toggleDivGlow();
+
+		// Make sure that resetting the form doesn't leave highlighted divs where
+		// they shouldn't be and vice versa.
+		/*
+		var fixFormElems = function(event) {
+			
+		}
+		jQuery('form:has(div.'+o.cssChecklist+')').bind('reset.fixFormElems',fixFormElems);
+		*/
 
 	});
 
