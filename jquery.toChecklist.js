@@ -60,6 +60,8 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			+'li.'+o.cssChecked+'  { background: #ffffa7; font-style: italic; }'
 			+'li.'+o.cssChecked+':hover { background: #ffff22; font-style: italic; }'
 			+'label.'+o.cssDisabled+' { color: #ddd; }'
+			+'div.'+o.cssChecklist+' input { display: block; float: left; }'
+			+'div.'+o.cssChecklist+' label { display: block; padding-left: 25px; }'
 			+'ul.'+o.cssListOfSelectedItems+' { height: 102px;'+overflowProperty+'font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
 			+'div.'+o.cssFindInList+' { margin-bottom: 5px; }'
 			+'div.'+o.cssFindInList+' input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }'
@@ -119,7 +121,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				
 			jQuery(this).replaceWith('<li tabindex="0"><input type="checkbox" value="'+checkboxValue
 				+'" name="'+jSelectElemName+'" id="'+checkboxId+'" ' + selected + disabled
-				+' />&nbsp;<label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
+				+' /><label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
 			if (!o.showCheckboxes) {
 				jQuery('#'+checkboxId).css('display','none');
