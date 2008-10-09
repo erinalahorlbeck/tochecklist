@@ -42,6 +42,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 	}
 	
 	var overflowProperty = (o.addScrollBar)? 'overflow-y: auto; overflow-x: hidden;' : '';
+	var leaveRoomForCheckbox = (o.showCheckboxes)? 'padding-left: 25px' : 'padding-left: 3px';
 	
 	if (o.useIncludedPluginStyle) {
 		// Define our included plugin styles.
@@ -61,7 +62,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			+'li.'+o.cssChecked+':hover { background: #ffff22; font-style: italic; }'
 			+'label.'+o.cssDisabled+' { color: #ddd; }'
 			+'div.'+o.cssChecklist+' input { display: block; float: left; }'
-			+'div.'+o.cssChecklist+' label { display: block; padding-left: 25px; }'
+			+'div.'+o.cssChecklist+' label { display: block; '+leaveRoomForCheckbox+' }'
 			+'ul.'+o.cssListOfSelectedItems+' { height: 102px;'+overflowProperty+'font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
 			+'div.'+o.cssFindInList+' { margin-bottom: 5px; }'
 			+'div.'+o.cssFindInList+' input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }'
@@ -105,7 +106,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			if (checkboxValue == '') {
 				checkboxValue = this.innerHTML;
 			}
-			checkboxValue = checkboxValue.replace(/ /,'_');
+			checkboxValue = checkboxValue.replace(/ /g,'_');
 			
 			var checkboxId = jSelectElemName+'_'+checkboxValue;
 			var labelText = jQuery(this).attr('innerHTML');
@@ -123,10 +124,8 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				+'" name="'+jSelectElemName+'" id="'+checkboxId+'" ' + selected + disabled
 				+' /><label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
-			if (!o.showCheckboxes) {
+			if (o.showCheckboxes === false) {
 				jQuery('#'+checkboxId).css('display','none');
-			} else {
-				jQuery('#'+checkboxId).click(function() { alert('preventing default!'); });	
 			}
 		});
 		
