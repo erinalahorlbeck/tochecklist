@@ -230,7 +230,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 		}
 
-		// Add styles
+		// ============ Add styles =============
 
 		jQuery(checklistDivId).addClass(o.cssChecklist);
 		if (o.addScrollBar) {
@@ -313,15 +313,19 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			}
 
 			// Change the styling of the row to be checked or unchecked.
-			if (jQuery('input',this).attr('checked')) {
-				jQuery(this).addClass(o.cssChecked);
-			} else {
-				jQuery(this).removeClass(o.cssChecked);
-			}
-			
-			toggleDivGlow();
+			var checkbox = jQuery('input',this).get(0);
+			updateLIStyleToMatchCheckedStatus(checkbox);
 
 		};
+		
+		var updateLIStyleToMatchCheckedStatus = function(checkbox) {
+			if (checkbox.checked) {
+				jQuery(checkbox).parent().addClass(o.cssChecked);
+			} else {
+				jQuery(checkbox).parent().removeClass(o.cssChecked);
+			}
+			toggleDivGlow();
+		}
 		
 		// Accessibility, primarily for IE
 		var handFocusToLI = function() {
@@ -337,12 +341,13 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 		// Make sure that resetting the form doesn't leave highlighted divs where
 		// they shouldn't be and vice versa.
-		/*
 		var fixFormElems = function(event) {
-			
+			jQuery('input',this).each(function() {
+				this.checked = this.defaultChecked;
+				updateLIStyleToMatchCheckedStatus(this);
+			}).parent();
 		}
 		jQuery('form:has(div.'+o.cssChecklist+')').bind('reset.fixFormElems',fixFormElems);
-		*/
 
 	});
 
