@@ -194,19 +194,25 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 							.bind('keydown.tabToFocus', function(event) {
 								if (event.keyCode == 9) {
 									event.preventDefault(); // No double tabs, please...
-									// Focus and then provide an event that will let the user press shift-tab
-									// to get back to the search box.
-									jQuery(curLabelObj.parentNode).focus().bind('keydown.tabBack', function(event) {
+									jQuery(curLabelObj.parentNode).bind('blur.restoreDefaultText',function() {
+										// This function restores the default text to the search box when
+										// you navigate away from a list item that is focused.
+										var defaultVal = jQuery(textbox).attr('defaultValue');
+										jQuery(textbox).attr('value',defaultVal).addClass(o.cssBlurred)
+										.bind('blur.blurSearchBox',blurSearchBox);
+										jQuery(this).unbind('blur.restoreDefaultText');
+									}).bind('keydown.tabBack', function(event) {
+										// This function lets you shift-tab to get back to the search box easily.
 										if (event.keyCode == 9 && event.shiftKey) {
 											event.preventDefault(); // No double tabs, please...
 											jQuery(textbox)
-											.unbind('focus.focusSearchBox').focus()
+											.unbind('focus.focusSearchBox')
 											.removeClass(o.cssBlurred)
 											.bind('focus.focusSearchBox',focusSearchBox)
-											.bind('blur.blurSearchBox',blurSearchBox);
+											.bind('blur.blurSearchBox',blurSearchBox).focus();
 											jQuery(this).unbind('keydown.tabBack');
 										}
-									});
+									}).focus(); // Focuses the actual list item found by the search box
 									jQuery(this).unbind('keydown.tabToFocus');
 								}
 							});
@@ -226,7 +232,6 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 		// Add styles
 
-		
 		jQuery(checklistDivId).addClass(o.cssChecklist);
 		if (o.addScrollBar) {
 			jQuery(checklistDivId).height(h - findInListDivHeight).width(w);
