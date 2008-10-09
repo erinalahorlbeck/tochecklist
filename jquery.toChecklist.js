@@ -1,5 +1,6 @@
 /**
  * toChecklist - a jQuery Plugin
+ * Version 1.0 Beta
  *
  * This is a work in progress and will be released under the GPL when completed.
  *
@@ -26,6 +27,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		// you can change the class names to whatever you want to use.
 		cssChecklist : 'checklist',
 		cssChecklistHighlighted : 'checklistHighlighted',
+		cssLeaveRoomForCheckbox : 'leaveRoomForCheckbox', // For label elements
 		cssEven : 'even',
 		cssOdd : 'odd',
 		cssChecked : 'checked',
@@ -62,7 +64,8 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			+'li.'+o.cssChecked+':hover { background: #ffff22; font-style: italic; }'
 			+'label.'+o.cssDisabled+' { color: #ddd; }'
 			+'div.'+o.cssChecklist+' input { display: block; float: left; }'
-			+'div.'+o.cssChecklist+' label { display: block; '+leaveRoomForCheckbox+' }'
+			+'div.'+o.cssChecklist+' label { display: block; }'
+			+'div.'+o.cssChecklist+' label.'+o.cssLeaveRoomForCheckbox+' { display: block; '+leaveRoomForCheckbox+' }'
 			+'ul.'+o.cssListOfSelectedItems+' { height: 102px;'+overflowProperty+'font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
 			+'div.'+o.cssFindInList+' { margin-bottom: 5px; }'
 			+'div.'+o.cssFindInList+' input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }'
@@ -73,10 +76,13 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 	// Here, THIS refers to the jQuery stack object that contains all the target elements that
 	// are going to be converted to checklists. Let's loop over them and do the conversion.
 	this.each(function() {
-	
+
 		// Hang on to the important information about this <select> element.
 		var jSelectElem = jQuery(this);
-		var jSelectElemName = jSelectElem.attr('name');
+		var jSelectElemId = jSelectElem.attr('id');
+		if (jSelectElemId == '') {
+			jSelectElemId = jSelectElem.attr('name'); // This probably isn't a good idea...	
+		}
 		if (o.useIncludedPluginStyle) {
 			var h = jSelectElem.height(); /* : '100%'; */
 			var w = jSelectElem.width();
@@ -108,7 +114,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			}
 			checkboxValue = checkboxValue.replace(/ /g,'_');
 			
-			var checkboxId = jSelectElemName+'_'+checkboxValue;
+			var checkboxId = jSelectElemId+'_'+checkboxValue;
 			var labelText = jQuery(this).attr('innerHTML');
 			var selected = '';
 			if (jQuery(this).attr('disabled')) {
@@ -121,20 +127,22 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			}
 				
 			jQuery(this).replaceWith('<li tabindex="0"><input type="checkbox" value="'+checkboxValue
-				+'" name="'+jSelectElemName+'" id="'+checkboxId+'" ' + selected + disabled
+				+'" name="'+jSelectElemId+'" id="'+checkboxId+'" ' + selected + disabled
 				+' /><label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
 			if (o.showCheckboxes === false) {
 				jQuery('#'+checkboxId).css('display','none');
+			} else {
+				jQuery('label[for='+checkboxId+']').addClass(o.cssLeaveRoomForCheckbox);	
 			}
 		});
 		
-		var checklistName = jSelectElemName+'_'+'checklist';
+		var checklistId = jSelectElemId+'_'+'checklist';
 
 		// Convert the outer SELECT elem to a <div>
-		jSelectElem.replaceWith('<div id="'+checklistName+'">'
+		jSelectElem.replaceWith('<div id="'+checklistId+'">'
 			+'<ul>'+jSelectElem.attr('innerHTML')+'</ul></div>');
-		var checklistDivId = '#'+checklistName;
+		var checklistDivId = '#'+checklistId;
 		
 		// We MUST set the checklist div's position to either 'relative' or 'absolute'
 		// (default is 'static'), or else Firefox will think the offsetParent of the inner
@@ -156,15 +164,15 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				jQuery(this).addClass(o.cssBlurred);
 			}
 
-			jQuery(checklistDivId).before('<div class="findInList" id="'+jSelectElemName+'_findInListDiv">'
+			jQuery(checklistDivId).before('<div class="findInList" id="'+jSelectElemId+'_findInListDiv">'
 				+'<input type="text" value="Type here to search list..." id="'
-				+jSelectElemName+'_findInList" class="'+o.cssBlurred+'" /></div>');
+				+jSelectElemId+'_findInList" class="'+o.cssBlurred+'" /></div>');
 
 			// Set width to same as original SELECT element.
 			if (o.useIncludedPluginStyle) {
-				jQuery('#'+jSelectElemName+'_findInList').css('width',w);
+				jQuery('#'+jSelectElemId+'_findInList').css('width',w);
 			}
-			jQuery('#'+jSelectElemName+'_findInList')
+			jQuery('#'+jSelectElemId+'_findInList')
 			// Attach event handlers to the input box...
 			.bind('focus.focusSearchBox', focusSearchBox)
 			.bind('blur.blurSearchBox',blurSearchBox)
@@ -225,7 +233,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 			// Compensate for the extra space the search box takes up by shortening the
 			// height of the checklist div. Also account for margin below the search box.
-			findInListDivHeight = jQuery('#'+jSelectElemName+'_findInListDiv').height() + 3;
+			findInListDivHeight = jQuery('#'+jSelectElemId+'_findInListDiv').height() + 3;
 
 		}
 
