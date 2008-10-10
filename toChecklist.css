@@ -1,0 +1,32 @@
+@charset "utf-8";
+/**
+ * For the "toChecklist" jQuery plugin, by Scott Horlbeck
+ *
+ * You must have useIncludedPluginStyle set to false to guarantee
+ * that any changes to this stylesheet will affect the checklists.
+*/
+
+
+div.checklist, div.checklistHighlighted { overflow-y: auto; overflow-x: hidden; /* If you don't want scrollbars, leave this one blank. */ }
+div.checklist { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; }
+div.checklistHighlighted { border: 1px solid gray; border-left: 3px solid #ffffa7; }
+
+ul.checklist { margin: 0; padding: 0; list-style-type: none; }
+li.even, li.odd, li.checked { padding: 3px; }
+li.even { background-color: white; }
+li.odd { background-color: #f7f7f7; }
+li.even:hover, li.odd:hover, li.focused { background-color: #dde; }
+li.checked { background: #ffffa7; font-style: italic; }
+li.checked:hover { background: #ffff22; font-style: italic; }
+
+label.disabled { color: #ddd; }
+
+div.checklist input { display: block; float: left; }
+div.checklist label { display: block; }
+div.checklist label.leaveRoomForCheckbox { display: block; padding-left: 25px; /* If hiding checkboxes, set padding-left to 3px */ }
+
+ul.listOfSelectedItems { height: 102px; overflow-y: auto; overflow-x: hidden; font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }
+
+div.findInList { margin-bottom: 5px; }
+div.findInList input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }
+div.findInList input.blurred { color: gray; background-color: white; }
