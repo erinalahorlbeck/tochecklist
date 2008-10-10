@@ -166,9 +166,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				+jSelectElemId+'_findInList" class="'+o.cssBlurred+'" /></div>');
 
 			// Set width to same as original SELECT element.
-			if (o.useIncludedPluginStyle) {
-				jQuery('#'+jSelectElemId+'_findInList').css('width',w);
-			}
+			jQuery('#'+jSelectElemId+'_findInList').css('width',w);
 			jQuery('#'+jSelectElemId+'_findInList')
 			// Attach event handlers to the input box...
 			.bind('focus.focusSearchBox', focusSearchBox)
