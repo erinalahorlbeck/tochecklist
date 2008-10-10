@@ -83,15 +83,12 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		if (jSelectElemId == '') {
 			jSelectElemId = jSelectElem.attr('name'); // This probably isn't a good idea...	
 		}
-		if (o.useIncludedPluginStyle) {
-			var h = jSelectElem.height(); /* : '100%'; */
-			var w = jSelectElem.width();
-			// We have to account for the extra thick left border.
-			if (o.useIncludedPluginStyle) w -= 4;
-//			alert(h + ' ' + w);
-//			var margin = jSelectElem.css('margin-top') +' '+ jSelectElem.css('margin-right')
-//				+' '+ jSelectElem.css('margin-bottom') +' '+ jSelectElem.css('margin-left');
-		}
+
+		var h = jSelectElem.height(); /* : '100%'; */
+		var w = jSelectElem.width();
+		// We have to account for the extra thick left border.
+		if (o.useIncludedPluginStyle) w -= 4;
+
 
 		// Make sure it's a SELECT element, and that it's a multiple one.
 		if (this.type != 'select-multiple' && this.type != 'select-one') {
