@@ -20,7 +20,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		addScrollBar : true,
 		addSearchBox : false,
 		showCheckboxes : true,
-		listSelectedItems : false,
+		showSelectedItems : false,
 
 		// If useIncludedPluginStyle is set to false, you should provide an external
 		// stylesheet defining the class names below. In case of name conflicts,
@@ -32,7 +32,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		cssOdd : 'odd',
 		cssChecked : 'checked',
 		cssDisabled : 'disabled',
-		cssListOfSelectedItems : 'listOfSelectedItems',
+		cssShowSelectedItems : 'showSelectedItems',
 		cssFocused : 'focused', // This cssFocused is for the li's in the checklist
 		cssFindInList : 'findInList',
 		cssBlurred : 'blurred' // This cssBlurred is for the findInList divs.
@@ -66,7 +66,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			+'div.'+o.cssChecklist+' input { display: block; float: left; }'
 			+'div.'+o.cssChecklist+' label { display: block; }'
 			+'div.'+o.cssChecklist+' label.'+o.cssLeaveRoomForCheckbox+' { display: block; '+leaveRoomForCheckbox+' }'
-			+'ul.'+o.cssListOfSelectedItems+' { height: 102px;'+overflowProperty+'font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
+			+'ul.'+o.cssShowSelectedItems+' { font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
 			+'div.'+o.cssFindInList+' { margin-bottom: 5px; }'
 			+'div.'+o.cssFindInList+' input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }'
 			+'div.'+o.cssFindInList+' input.'+o.cssBlurred+' { color: gray; background-color: white; }'
@@ -294,16 +294,6 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 				if (event.keyCode != 32) return;
 			}
-			
-			// Next on the keyboard accessibility agenda, we need to make sure that if
-			// the user presses tab or shift-tab, or the up and down arrows, the next/previous
-			// LI will be selected, and not the next checkbox or label element or whatever.
-			/*
-			if (event.keyCode == 32) {
-				event.cancelBubble = true;
-				event.stopPropagation();
-			}
-			*/
 
 			// Not sure if unbind() here removes default action, but that's what I want.
 			jQuery('label',this).unbind(); 
@@ -317,6 +307,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			// Change the styling of the row to be checked or unchecked.
 			var checkbox = jQuery('input',this).get(0);
 			updateLIStyleToMatchCheckedStatus(checkbox);
+			showSelectedItems();
 
 		};
 		
@@ -347,9 +338,35 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			jQuery('input',this).each(function() {
 				this.checked = this.defaultChecked;
 				updateLIStyleToMatchCheckedStatus(this);
+				showSelectedItems();
 			}).parent();
 		}
 		jQuery('form:has(div.'+o.cssChecklist+')').bind('reset.fixFormElems',fixFormElems);
+		
+		
+		// ================== List the selected items in a UL ==========================
+		
+		var selectedItemsListId = '#'+jSelectElemId + '_selectedItems';
+		if (o.showSelectedItems) {
+			jQuery(selectedItemsListId).addClass(o.cssShowSelectedItems);
+		}
+
+		var showSelectedItems = function() {
+			if (o.showSelectedItems) {
+				// Clear the innerHTML of the list and then add every item to it
+				// that is highlighted in the checklist.
+				jQuery(selectedItemsListId).html('');
+				jQuery('label',checklistDivId).each(function() {
+					if (jQuery(this).parent().hasClass(o.cssChecked)) {
+						var labelText = jQuery.trim(this.innerHTML);
+						jQuery(selectedItemsListId).append('<li>'+labelText+'</li>');
+					}
+				});
+			}
+		};
+		
+		// We have to run showSeelctedItems() once here too, upon initial conversion.
+		showSelectedItems();
 
 	});
 
