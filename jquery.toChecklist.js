@@ -13,18 +13,12 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 	// Provide default settings, which may be overridden if necessary.
 	o = jQuery.extend({
 
-		// I want this plugin to be quick and easy to add. Ideally, the
-		// developer shouldn't be required to download or author extra CSS
-		// classes, but shouldn't be prevented from doing so if need be.
-		useIncludedPluginStyle : true,
 		addScrollBar : true,
 		addSearchBox : false,
 		showCheckboxes : true,
 		showSelectedItems : false,
 
-		// If useIncludedPluginStyle is set to false, you should provide an external
-		// stylesheet defining the class names below. In case of name conflicts,
-		// you can change the class names to whatever you want to use.
+		// In case of name conflicts, you can change the class names to whatever you want to use.
 		cssChecklist : 'checklist',
 		cssChecklistHighlighted : 'checklistHighlighted',
 		cssLeaveRoomForCheckbox : 'leaveRoomForCheckbox', // For label elements
@@ -45,34 +39,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 	
 	var overflowProperty = (o.addScrollBar)? 'overflow-y: auto; overflow-x: hidden;' : '';
 	var leaveRoomForCheckbox = (o.showCheckboxes)? 'padding-left: 25px' : 'padding-left: 3px';
-	
-	if (o.useIncludedPluginStyle) {
-		// Define our included plugin styles.
-		// I realize this isn't exactly "good" coding practice (embedding styles here, instead
-		// of in a separate stylesheet), but  I want this plugin to be as quick and easy to add
-		// as possible.
-		jQuery('<style type="text/css">'
-			+'div.'+o.cssChecklist+', div.'+o.cssChecklistHighlighted+' { '+overflowProperty+' }'
-			+'div.'+o.cssChecklist+' { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; }'
-			+'div.'+o.cssChecklistHighlighted+' { border: 1px solid gray; border-left: 3px solid #ffffa7; }'
-			+'ul.'+o.cssChecklist+' { margin: 0; padding: 0; list-style-type: none; }'
-			+'li.'+o.cssEven+', li.'+o.cssOdd+', li.'+o.cssChecked+' { padding: 3px; }'
-			+'li.'+o.cssEven+' { background-color: white; }'
-			+'li.'+o.cssOdd+' { background-color: #f7f7f7; }'
-			+'li.'+o.cssEven+':hover, li.'+o.cssOdd+':hover, li.'+o.cssFocused+' { background-color: #dde; }'
-			+'li.'+o.cssChecked+'  { background: #ffffa7; font-style: italic; }'
-			+'li.'+o.cssChecked+':hover { background: #ffff22; font-style: italic; }'
-			+'label.'+o.cssDisabled+' { color: #ddd; }'
-			+'div.'+o.cssChecklist+' input { display: block; float: left; }'
-			+'div.'+o.cssChecklist+' label { display: block; }'
-			+'div.'+o.cssChecklist+' label.'+o.cssLeaveRoomForCheckbox+' { display: block; '+leaveRoomForCheckbox+' }'
-			+'ul.'+o.cssShowSelectedItems+' { font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }'
-			+'div.'+o.cssFindInList+' { margin-bottom: 5px; }'
-			+'div.'+o.cssFindInList+' input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }'
-			+'div.'+o.cssFindInList+' input.'+o.cssBlurred+' { color: gray; background-color: white; }'
-			+'</style>').appendTo('head');
-	}
-	
+
 	// Here, THIS refers to the jQuery stack object that contains all the target elements that
 	// are going to be converted to checklists. Let's loop over them and do the conversion.
 	this.each(function() {
@@ -87,7 +54,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		var h = jSelectElem.height(); /* : '100%'; */
 		var w = jSelectElem.width();
 		// We have to account for the extra thick left border.
-		if (o.useIncludedPluginStyle) w -= 4;
+		w -= 4;
 
 
 		// Make sure it's a SELECT element, and that it's a multiple one.
