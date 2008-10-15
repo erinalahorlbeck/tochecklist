@@ -1,9 +1,6 @@
 @charset "utf-8";
 /**
  * CSS for the "toChecklist" jQuery plugin, by Scott Horlbeck
- *
- * You must have useIncludedPluginStyle set to false to guarantee
- * that any changes to this stylesheet will affect the checklists.
 */
 
 div.checklist, div.checklistHighlighted { overflow-y: auto; overflow-x: hidden; /* If you don't want scrollbars, leave this one blank. */ }
