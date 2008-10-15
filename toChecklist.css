@@ -21,7 +21,7 @@ div.checklist input { display: block; float: left; }
 div.checklist label { display: block; }
 div.checklist label.leaveRoomForCheckbox { display: block; padding-left: 25px; /* If hiding checkboxes, set padding-left to 3px */ }
 
-div.checklist ul.showSelectedItems { font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }
+ul.showSelectedItems { font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }
 
 /**** Search box ****/
 div.findInList { margin-bottom: 5px; }
