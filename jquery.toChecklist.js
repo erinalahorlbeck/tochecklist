@@ -12,9 +12,8 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * Full license is available at <http://www.gnu.org/copyleft/gpl.html>.
+ * GNU General Public License for more details (LICENSE.txt or
+ * http://www.gnu.org/copyleft/gpl.html)
  *
 */
 jQuery.fn.toChecklist = function(o) { // "o" stands for options
