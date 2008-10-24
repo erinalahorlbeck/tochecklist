@@ -2,7 +2,7 @@
  * toChecklist plugin for jQuery 1.2.6+
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist
- * @version 1.0.1 Beta
+ * @version 1.0.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,9 @@
  * GNU General Public License for more details (LICENSE.txt or
  * http://www.gnu.org/copyleft/gpl.html)
  *
+ * Thanks to the UNM Health Sciences Library and Informatics Center
+ * (http://hsc.unm.edu/library/) for funding the initial creation
+ * of this plugin and allowing me to publish it as open source software.
 */
 jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
@@ -340,7 +343,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			}
 		};
 		
-		// We have to run showSeelctedItems() once here too, upon initial conversion.
+		// We have to run showSelectedItems() once here too, upon initial conversion.
 		showSelectedItems();
 
 	});
