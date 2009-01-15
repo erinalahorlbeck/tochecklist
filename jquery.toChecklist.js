@@ -115,8 +115,11 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		var checklistId = jSelectElemId+'_'+'checklist';
 
 		// Convert the outer SELECT elem to a <div>
-		jSelectElem.replaceWith('<div id="'+checklistId+'">'
-			+'<ul>'+jSelectElem.attr('innerHTML')+'</ul></div>');
+		// Also, enclose it inside another div that has the original id, so developers
+		// can access it as before. Also, this allows the search box to be inside
+		// the div as well.
+		jSelectElem.replaceWith('<div id="'+jSelectElemId+'"><div id="'+checklistId+'">'
+			+'<ul>'+jSelectElem.attr('innerHTML')+'</ul></div></div>');
 		var checklistDivId = '#'+checklistId;
 		
 		// We MUST set the checklist div's position to either 'relative' or 'absolute'
@@ -347,5 +350,28 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		showSelectedItems();
 
 	});
+
+};
+
+jQuery.fn.clearChecklist = function() {
+
+		// For each checklist passed in... 
+		this.each(function() {
+		
+			// First, make sure it IS a checklist.
+			var divContainsChecklist = jQuery('#'+this.id+'_checklist',this).get();
+			if (this.tagName == 'DIV' && divContainsChecklist) {
+				// Grab each li in the checklist... 
+				jQuery('li',this).each(function() {
+					// If it's checked, force the click event handler to run.
+					if (jQuery('input:checkbox',this).attr('checked')) {
+						jQuery(this).trigger('click');
+					}
+				});
+				// alert('Already a checklist.');
+				return jQuery;
+			}
+		
+		});
 
 };
