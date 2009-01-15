@@ -392,7 +392,6 @@ jQuery.fn.checkAllInChecklist = function() {
 
 		// For each checklist passed in... 
 		this.each(function() {
-		
 			if ( $(this).isChecklist() ) {
 				// Grab each li in the checklist... 
 				$('li',this).each(function() {
@@ -400,6 +399,23 @@ jQuery.fn.checkAllInChecklist = function() {
 					if (!$('input:checkbox',this).attr('checked') && !$('input:checkbox',this).attr('disabled')) {
 						$(this).trigger('click');
 					}
+				});
+			}
+		
+		});
+
+		return $;
+
+}
+
+jQuery.fn.invertChecklist = function() {
+
+		// For each checklist passed in... 
+		this.each(function() {
+			if ( $(this).isChecklist() ) {
+				// Grab each li in the checklist... 
+				$('li',this).each(function() {
+					$(this).trigger('click');
 				});
 			}
 		
