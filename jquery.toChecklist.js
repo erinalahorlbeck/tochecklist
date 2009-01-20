@@ -23,6 +23,60 @@
 
 jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
+	// Since o can be a string instead of an object, we need a function that
+	// will handle the action requested when o is a string (e.g. 'clearAll')
+	var updateChecklist = function(action,checklistElem) {
+					
+		// Before we operate on all checkboxes, we need to make sure that
+		// showSelectedItems is disabled, at least temporarily. Otherwise,
+		// this process will be REALLY slow because it tries to update the
+		// DOM a thousand times unnecessarily.
+		var showSelectedItemsSetting = $(checklistElem).attr('showSelectedItems');
+		$(checklistElem).attr('showSelectedItems', 'false');
+
+		// Grab each li in the checklist... 	
+		$('li',checklistElem).each(function() {
+
+			switch(action) {
+				case 'clearAll' :
+					// If it's checked, force the click event handler to run.
+					if ($('input:checkbox',this).attr('checked')) {
+						$(this).trigger('click');
+					}
+					break;
+				case 'checkAll' :
+					// If it's unchecked and not disabled, force the click event handler to run.
+					if (!$('input:checkbox',this).attr('checked') && !$('input:checkbox',this).attr('disabled')) {
+						$(this).trigger('click');
+					}
+					break;
+				case 'invert' :
+					$(this).trigger('click');
+					break;
+				default :
+					alert("toChecklist Plugin says:\n\nWarning - Invalid action requested on checklist.\nThe action requested was: " + action);
+					break;
+			}
+
+		});
+
+		$(checklistElem).attr('showSelectedItems', showSelectedItemsSetting);
+
+		// showSelectedItems(); // CRAP! This method isn't available in this scope...
+
+	};
+	
+	// If o is a simple string, then we're updating an existing checklist
+	// (i.e. 'checkAll') instead of converting a regular multi-SELECT box.
+	if (typeof o == 'string') {
+		this.each(function() {
+			if ( !$(this).isChecklist() )
+				return true; // return true is same as 'continue'
+			updateChecklist(o,this);
+		});
+		return $;
+	}
+
 	// Provide default settings, which may be overridden if necessary.
 	o = jQuery.extend({
 
@@ -376,98 +430,5 @@ jQuery.fn.isChecklist = function() {
 	// and we want to specifically return true or false.
 	return (isChecklist)? true : false;
 };
-
-jQuery.fn.clearChecklist = function() {
-
-		// NOTE TO SELF
-		// I think this is faulty logic. We don't need to know the numOfChecklists
-		// because we're going to turn on and off the showSelectedItems property
-		// before looping over every li, not every checklist.
-		var numOfChecklists = this.length;
-
-		// For each checklist passed in... 
-		this.each(function(i) {
-
-			if ( !$(this).isChecklist() ) return true; // Same as 'continue'
-						
-			// Before we operate on all checkboxes, we need to make sure that
-			// showSelectedItems is disabled, at least temporarily. Otherwise,
-			// this process will be REALLY slow because it tries to update the
-			// DOM a thousand times unnecessarily.
-			if (i == 0) {
-				var showSelectedItemsSetting = $(this).attr('showSelectedItems');
-				$(this).attr('showSelectedItems', 'false');
-			}
-
-			// Grab each li in the checklist... 	
-			$('li',this).each(function() {
-				// If it's checked, force the click event handler to run.
-				if ($('input:checkbox',this).attr('checked')) {
-					$(this).trigger('click');
-				}
-			});
-
-			if (i == numOfChecklists-1)
-				$(this).attr('showSelectedItems', showSelectedItemsSetting);
-
-			if (i == numOfChecklists - 1 && showSelectedItemsSetting)
-				showSelectedItems(); // CRAP! This method isn't available in this scope...
-		
-		});
-
-		return $;
-
-};
-
-// See comments in clearChecklist() method for more info...
-jQuery.fn.checkAllInChecklist = function(i) {
-
-		var numOfChecklists = this.length;
-
-		this.each(function() {
-			if ( !$(this).isChecklist() ) return true;
-
-			if (i == 0) {
-				var showSelectedItemsSetting = $(this).attr('showSelectedItems');
-				$(this).attr('showSelectedItems', 'false');
-			}
-
-			// Grab each li in the checklist... 
-			$('li',this).each(function() {
-				// If it's unchecked and not disabled, force the click event handler to run.
-				if (!$('input:checkbox',this).attr('checked') && !$('input:checkbox',this).attr('disabled')) {
-					$(this).trigger('click');
-				}
-			});
-			
-			if (i == numOfChecklists-1)
-				$(this).attr('showSelectedItems', showSelectedItemsSetting);
-
-			if (i == numOfChecklists - 1 && showSelectedItemsSetting)
-				showSelectedItems(); // CRAP! This method isn't available in this scope...
-		
-		});
-
-		return $;
-
-}
-
-// See comments in clearChecklist() method for more info...
-jQuery.fn.invertChecklist = function(i) {
-
-		// For each checklist passed in... 
-		this.each(function() {
-			if ( $(this).isChecklist() ) {
-				// Grab each li in the checklist... 
-				$('li',this).each(function() {
-					$(this).trigger('click');
-				});
-			}
-		
-		});
-
-		return $;
-
-}
 
 })(jQuery);
