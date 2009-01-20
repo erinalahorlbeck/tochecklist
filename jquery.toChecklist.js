@@ -123,6 +123,13 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		jSelectElem.replaceWith('<div id="'+jSelectElemId+'"><div id="'+checklistId+'">'
 			+'<ul>'+jSelectElem.attr('innerHTML')+'</ul></div></div>');
 		var checklistDivId = '#'+checklistId;
+
+		// We're going to create a custom HTML attribute in the main div box (the one
+		// that contains the checklist) to store our value for the showSelectedItems
+		// setting. This is necessary because we may need to change this value dynamically
+		// after the initial conversion in order to make it faster to check/uncheck every
+		// item in the list.
+		$('#'+jSelectElemId).attr('showSelectedItems',o.showSelectedItems.toString());
 		
 		// We MUST set the checklist div's position to either 'relative' or 'absolute'
 		// (default is 'static'), or else Firefox will think the offsetParent of the inner
@@ -290,7 +297,11 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			// Change the styling of the row to be checked or unchecked.
 			var checkbox = $('input',this).get(0);
 			updateLIStyleToMatchCheckedStatus(checkbox);
-			showSelectedItems();
+			
+			// The showSelectedItems setting can change after the initial conversion to
+			// a checklist, so rather than checking o.showSelectedItems, we check the
+			// value of the custom HTML attribute on the main containing div.
+			if ($('#'+jSelectElemId).attr('showSelectedItems') === 'true') showSelectedItems();
 
 		};
 		
@@ -321,7 +332,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			$('input',this).each(function() {
 				this.checked = this.defaultChecked;
 				updateLIStyleToMatchCheckedStatus(this);
-				showSelectedItems();
+				if (o.showSelectedItems) showSelectedItems();
 			}).parent();
 		}
 		$('form:has(div.'+o.cssChecklist+')').bind('reset.fixFormElems',fixFormElems);
@@ -335,21 +346,19 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		}
 
 		var showSelectedItems = function() {
-			if (o.showSelectedItems) {
-				// Clear the innerHTML of the list and then add every item to it
-				// that is highlighted in the checklist.
-				$(selectedItemsListId).html('');
-				$('label',checklistDivId).each(function() {
-					if ($(this).parent().hasClass(o.cssChecked)) {
-						var labelText = jQuery.trim(this.innerHTML);
-						$(selectedItemsListId).append('<li>'+labelText+'</li>');
-					}
-				});
-			}
+			// Clear the innerHTML of the list and then add every item to it
+			// that is highlighted in the checklist.
+			$(selectedItemsListId).html('');
+			$('label',checklistDivId).each(function() {
+				if ($(this).parent().hasClass(o.cssChecked)) {
+					var labelText = jQuery.trim(this.innerHTML);
+					$(selectedItemsListId).append('<li>'+labelText+'</li>');
+				}
+			});
 		};
 		
 		// We have to run showSelectedItems() once here too, upon initial conversion.
-		showSelectedItems();
+		if (o.showSelectedItems) showSelectedItems();
 
 	});
 
@@ -370,17 +379,39 @@ jQuery.fn.isChecklist = function() {
 
 jQuery.fn.clearChecklist = function() {
 
+		// NOTE TO SELF
+		// I think this is faulty logic. We don't need to know the numOfChecklists
+		// because we're going to turn on and off the showSelectedItems property
+		// before looping over every li, not every checklist.
+		var numOfChecklists = this.length;
+
 		// For each checklist passed in... 
-		this.each(function() {
-			if ( $(this).isChecklist() ) {
-				// Grab each li in the checklist... 	
-				$('li',this).each(function() {
-					// If it's checked, force the click event handler to run.
-					if ($('input:checkbox',this).attr('checked')) {
-						$(this).trigger('click');
-					}
-				});
+		this.each(function(i) {
+
+			if ( !$(this).isChecklist() ) return true; // Same as 'continue'
+						
+			// Before we operate on all checkboxes, we need to make sure that
+			// showSelectedItems is disabled, at least temporarily. Otherwise,
+			// this process will be REALLY slow because it tries to update the
+			// DOM a thousand times unnecessarily.
+			if (i == 0) {
+				var showSelectedItemsSetting = $(this).attr('showSelectedItems');
+				$(this).attr('showSelectedItems', 'false');
 			}
+
+			// Grab each li in the checklist... 	
+			$('li',this).each(function() {
+				// If it's checked, force the click event handler to run.
+				if ($('input:checkbox',this).attr('checked')) {
+					$(this).trigger('click');
+				}
+			});
+
+			if (i == numOfChecklists-1)
+				$(this).attr('showSelectedItems', showSelectedItemsSetting);
+
+			if (i == numOfChecklists - 1 && showSelectedItemsSetting)
+				showSelectedItems(); // CRAP! This method isn't available in this scope...
 		
 		});
 
@@ -388,19 +419,32 @@ jQuery.fn.clearChecklist = function() {
 
 };
 
-jQuery.fn.checkAllInChecklist = function() {
+// See comments in clearChecklist() method for more info...
+jQuery.fn.checkAllInChecklist = function(i) {
 
-		// For each checklist passed in... 
+		var numOfChecklists = this.length;
+
 		this.each(function() {
-			if ( $(this).isChecklist() ) {
-				// Grab each li in the checklist... 
-				$('li',this).each(function() {
-					// If it's unchecked and not disabled, force the click event handler to run.
-					if (!$('input:checkbox',this).attr('checked') && !$('input:checkbox',this).attr('disabled')) {
-						$(this).trigger('click');
-					}
-				});
+			if ( !$(this).isChecklist() ) return true;
+
+			if (i == 0) {
+				var showSelectedItemsSetting = $(this).attr('showSelectedItems');
+				$(this).attr('showSelectedItems', 'false');
 			}
+
+			// Grab each li in the checklist... 
+			$('li',this).each(function() {
+				// If it's unchecked and not disabled, force the click event handler to run.
+				if (!$('input:checkbox',this).attr('checked') && !$('input:checkbox',this).attr('disabled')) {
+					$(this).trigger('click');
+				}
+			});
+			
+			if (i == numOfChecklists-1)
+				$(this).attr('showSelectedItems', showSelectedItemsSetting);
+
+			if (i == numOfChecklists - 1 && showSelectedItemsSetting)
+				showSelectedItems(); // CRAP! This method isn't available in this scope...
 		
 		});
 
@@ -408,7 +452,8 @@ jQuery.fn.checkAllInChecklist = function() {
 
 }
 
-jQuery.fn.invertChecklist = function() {
+// See comments in clearChecklist() method for more info...
+jQuery.fn.invertChecklist = function(i) {
 
 		// For each checklist passed in... 
 		this.each(function() {
