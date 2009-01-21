@@ -31,41 +31,53 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		// showSelectedItems is disabled, at least temporarily. Otherwise,
 		// this process will be REALLY slow because it tries to update the
 		// DOM a thousand times unnecessarily.
-		var showSelectedItemsSetting = $(checklistElem).attr('showSelectedItems');
-		$(checklistElem).attr('showSelectedItems', 'false');
+		// (We will only do this if the list is greater than 3 items.)
+		
+		var showSelectedItemsSetting;
+		
+		var disableDynamicList = function(checklistLength) {
+			if (checklistLength > 3) {
+				showSelectedItemsSetting = $(checklistElem).attr('showSelectedItems');
+				$(checklistElem).attr('showSelectedItems', 'false');
+			}
+		}
+		
+		var enableDynamicList = function() {
+			$(checklistElem).attr('showSelectedItems', showSelectedItemsSetting);
+		}
 
-		// Grab each li in the checklist...
-		var checklistLength = $('li',checklistElem).length;
-		$('li',checklistElem).each(function(i) {
+		switch(action) {
 
-			switch(action) {
 				case 'clearAll' :
-					// If it's checked, force the click event handler to run.
-					if ($('input:checkbox',this).attr('checked')) {
-						$(this).trigger('click');
-					}
+					var selector = 'li:has(input:checked)';
 					break;
+
 				case 'checkAll' :
-					// If it's unchecked and not disabled, force the click event handler to run.
-					if (!$('input:checkbox',this).attr('checked') && !$('input:checkbox',this).attr('disabled')) {
-						$(this).trigger('click');
-					}
+					var selector = 'li:has(input:not(:checked,:disabled))';
 					break;
+
 				case 'invert' :
-					$(this).trigger('click');
+					var selector = 'li';
 					break;
+
 				default :
 					alert("toChecklist Plugin says:\n\nWarning - Invalid action requested on checklist.\nThe action requested was: " + action);
 					break;
-			}
-			
-			// Before we check/uncheck the penultimate item in the list, we need to restore
-			// the showSelectedItems setting to its original setting, so that we update the
-			// list of selected items appropriately on the last item we check/uncheck.
-			if (i == checklistLength - 2)
-				$(checklistElem).attr('showSelectedItems', showSelectedItemsSetting);
 
-		});
+			}
+
+			var checklistLength = $(selector,checklistElem).length;
+			disableDynamicList(checklistLength);
+			// If it's checked, force the click event handler to run.
+			$(selector,checklistElem).each(function(i) {
+				// Before we check/uncheck the penultimate item in the list, we need to restore
+				// the showSelectedItems setting to its original setting, so that we update the
+				// list of selected items appropriately on the last item we check/uncheck.
+				if (i == checklistLength - 2 && checklistLength > 3)
+					enableDynamicList();
+				$(this).trigger('click');
+			});
+
 
 	};
 	
