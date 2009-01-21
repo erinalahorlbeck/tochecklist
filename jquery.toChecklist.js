@@ -1,8 +1,8 @@
 /**
- * toChecklist plugin for jQuery 1.2.6+
+ * toChecklist plugin for jQuery 1.3.0+
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist
- * @version 1.0.1
+ * @version 1.1.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
