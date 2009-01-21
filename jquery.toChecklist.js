@@ -34,8 +34,9 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		var showSelectedItemsSetting = $(checklistElem).attr('showSelectedItems');
 		$(checklistElem).attr('showSelectedItems', 'false');
 
-		// Grab each li in the checklist... 	
-		$('li',checklistElem).each(function() {
+		// Grab each li in the checklist...
+		var checklistLength = $('li',checklistElem).length;
+		$('li',checklistElem).each(function(i) {
 
 			switch(action) {
 				case 'clearAll' :
@@ -57,12 +58,14 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 					alert("toChecklist Plugin says:\n\nWarning - Invalid action requested on checklist.\nThe action requested was: " + action);
 					break;
 			}
+			
+			// Before we check/uncheck the penultimate item in the list, we need to restore
+			// the showSelectedItems setting to its original setting, so that we update the
+			// list of selected items appropriately on the last item we check/uncheck.
+			if (i == checklistLength - 2)
+				$(checklistElem).attr('showSelectedItems', showSelectedItemsSetting);
 
 		});
-
-		$(checklistElem).attr('showSelectedItems', showSelectedItemsSetting);
-
-		// showSelectedItems(); // CRAP! This method isn't available in this scope...
 
 	};
 	
