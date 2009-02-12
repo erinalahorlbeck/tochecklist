@@ -311,9 +311,9 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			$(this).addClass(o.cssFocused);
 		}).blur(function(event) {
 			$(this).removeClass(o.cssFocused);
-		}).mouseout(function() {
+		});/*.mouseout(function() {
 			$(this).removeClass(o.cssFocused);
-		});
+		});*/
 			
 		// Highlight preselected ones.
 		$('li',checklistDivId).each(function() {
@@ -336,7 +336,8 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		// Check/uncheck boxes
 		var check = function(event) {
 			
-			// This needs to be keyboard accessible too. Only check the box it if the user
+			// This needs to be keyboard accessible too. Only check the box if the user
+			// This needs to be keyboard accessible too. Only check the box if the user
 			// presses space (enter typically submits a form, so is not safe).
 			if (event.type == 'keydown') {
 				// Pressing spacebar in IE and Opera triggers a Page Down. We don't want that

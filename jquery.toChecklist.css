@@ -11,9 +11,9 @@ ul.checklist { margin: 0; padding: 0; list-style-type: none; }
 div.checklist li.even, div.checklist li.odd, div.checklist li.checked { padding: 3px; }
 div.checklist li.even { background-color: white; }
 div.checklist li.odd { background-color: #f7f7f7; }
-div.checklist li.even:hover, div.checklist li.odd:hover, div.checklist li.focused { background-color: #dde; }
+div.checklist li.even:hover, div.checklist li.odd:hover, div.checklist li.focused, div.checklist li:hover label { background-color: #dde; }
 div.checklist li.checked { background: #ffffa7; font-style: italic; }
-div.checklist li.checked:hover { background: #ffff22; font-style: italic; }
+div.checklist li.checked:hover, div.checklist li.checked:hover label { background: #ffff22; font-style: italic; }
 
 div.checklist label.disabled { color: #ddd; }
 
