@@ -177,7 +177,9 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				+' /><label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
 			if (o.showCheckboxes === false) {
-				$('#'+checkboxId).css('display','none');
+				// We could use display:none here, but IE can't handle it. Better
+				// to hide the checkboxes off screen to the left.
+				$('#'+checkboxId).css('position','absolute').css('left','-50000px');
 			} else {
 				$('label[for='+checkboxId+']').addClass(o.cssLeaveRoomForCheckbox);	
 			}
