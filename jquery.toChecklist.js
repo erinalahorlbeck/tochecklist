@@ -99,6 +99,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		addSearchBox : false,
 		showCheckboxes : true,
 		showSelectedItems : false,
+		php_compatible : false,
 
 		// In case of name conflicts, you can change the class names to whatever you want to use.
 		cssChecklist : 'checklist',
@@ -130,7 +131,14 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		var jSelectElem = $(this);
 		var jSelectElemId = jSelectElem.attr('id');
 		if (jSelectElemId == '') {
-			jSelectElemId = jSelectElem.attr('name'); // This probably isn't a good idea...	
+			// Regardless of whether this is a PHP environment, we need an id
+			// for the element, and it shouldn't have brackets [] in it.
+			jSelectElemId = jSelectElem.attr('name').replace(/\[\]/,'');
+			if (jSelectElemId == '') {
+				error('Can\'t convert element to checklist.\nYour SELECT element must'
+					+' have a "name" attribute and/or an "id" attribute specified.');
+				return $;
+			}
 		}
 
 		var h = jSelectElem.height(); /* : '100%'; */
@@ -171,9 +179,11 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				var disabledClass = '';
 				var selected = ($(this).attr('selected'))? 'checked="checked"' : '';
 			}
+			
+			var phpBrackets = (o.php_compatible)? '[]' : '';
 
 			$(this).replaceWith('<li tabindex="0"><input type="checkbox" value="'+checkboxValue
-				+'" name="'+jSelectElemId+'" id="'+checkboxId+'" ' + selected + disabled
+				+'" name="'+jSelectElemId+phpBrackets+'" id="'+checkboxId+'" ' + selected + disabled
 				+' /><label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
 			if (o.showCheckboxes === false) {
