@@ -4,11 +4,11 @@
 */
 
 div.checklist, div.checklistHighlighted { overflow-y: auto; overflow-x: hidden; /* If you don't want scrollbars, leave this one blank. */ }
-div.checklist { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; }
+div.checklist { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; line-height: 1.4em; color: #555; }
 div.checklistHighlighted { border: 1px solid gray; border-left: 3px solid #ffffa7; }
 
 ul.checklist { margin: 0; padding: 0; list-style-type: none; }
-div.checklist li.even, div.checklist li.odd, div.checklist li.checked { padding: 3px; }
+div.checklist li { padding: 3px; }
 div.checklist li.even { background-color: white; }
 div.checklist li.odd { background-color: #f7f7f7; }
 div.checklist li.even:hover, div.checklist li.odd:hover, div.checklist li.focused, div.checklist li:hover label { background-color: #dde; }
@@ -17,9 +17,10 @@ div.checklist li.checked:hover, div.checklist li.checked:hover label { backgroun
 
 div.checklist label.disabled { color: #ddd; }
 
-div.checklist input { display: block; float: left; }
+div.checklist li { position: relative; }
+div.checklist li input { display: block; /* float: left;*/ position: absolute; left:5px; top: 1px; }
 div.checklist label { display: block; }
-div.checklist label.leaveRoomForCheckbox { display: block; padding-left: 25px; /* If hiding checkboxes, set padding-left to 3px */ }
+div.checklist label.leaveRoomForCheckbox { display: block; padding-left: 25px; /* If hiding checkboxes, set padding-left to 3px */ } 
 
 ul.showSelectedItems { font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }
 
