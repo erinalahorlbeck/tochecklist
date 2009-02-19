@@ -4,10 +4,10 @@
 */
 
 div.checklist, div.checklistHighlighted { overflow-y: auto; overflow-x: hidden; /* If you don't want scrollbars, leave this one blank. */ }
-div.checklist { font-family: arial; font-size: 12px; border: 1px solid gray; border-left: 3px solid #ccc; line-height: 1.4em; color: #555; }
+div.checklist { border: 1px solid gray; border-left: 3px solid #ccc; color: #555; font-family: arial; font-size: 12px;  line-height: 1.6em; }
 div.checklistHighlighted { border: 1px solid gray; border-left: 3px solid #ffffa7; }
 
-ul.checklist { margin: 0; padding: 0; list-style-type: none; }
+ul.checklist { list-style-type: none; margin: 0; padding: 0; }
 div.checklist li { padding: 3px; }
 div.checklist li.even { background-color: white; }
 div.checklist li.odd { background-color: #f7f7f7; }
@@ -17,14 +17,15 @@ div.checklist li.checked:hover, div.checklist li.checked:hover label { backgroun
 
 div.checklist label.disabled { color: #ddd; }
 
-div.checklist li { position: relative; }
-div.checklist li input { display: block; /* float: left;*/ position: absolute; left:5px; top: 1px; }
+/*div.checklist li { position: relative; }*/
+div.checklist li input { display: block; float: left; }
 div.checklist label { display: block; }
 div.checklist label.leaveRoomForCheckbox { display: block; padding-left: 25px; /* If hiding checkboxes, set padding-left to 3px */ } 
 
-ul.showSelectedItems { font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; color: #770; }
+ul.showSelectedItems { color: #770; font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; }
 
 /**** Search box ****/
 div.findInList { margin-bottom: 5px; }
-div.findInList input { background-color: #ffffef; color: black; background-color: #ffffef; font-size: .9em; border: solid 1px #eee; padding: 2px; }
-div.findInList input.blurred { color: gray; background-color: white; }
+div.findInList input { background-color: #ffffef; border: solid 1px #eee; color: black; font-size: .9em; padding: 2px; }
+div.findInList input.blurred { background-color: white; color: gray; }
+div.findInList input { font-family: arial; font-size: .8em; }
