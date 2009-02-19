@@ -2,7 +2,7 @@
  * toChecklist plugin for jQuery 1.3.x
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist
- * @version 1.1.1
+ * @version 1.2.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		addSearchBox : false,
 		showCheckboxes : true,
 		showSelectedItems : false,
-		php_compatible : false,
+		submitDataAsArray : true,
 
 		// In case of name conflicts, you can change the class names to whatever you want to use.
 		cssChecklist : 'checklist',
@@ -180,10 +180,10 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				var selected = ($(this).attr('selected'))? 'checked="checked"' : '';
 			}
 			
-			var phpBrackets = (o.php_compatible)? '[]' : '';
+			var arrayBrackets = (o.submitDataAsArray)? '[]' : '';
 
 			$(this).replaceWith('<li tabindex="0"><input type="checkbox" value="'+checkboxValue
-				+'" name="'+jSelectElemId+phpBrackets+'" id="'+checkboxId+'" ' + selected + disabled
+				+'" name="'+jSelectElemId+arrayBrackets+'" id="'+checkboxId+'" ' + selected + disabled
 				+' /><label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
 			if (o.showCheckboxes === false) {
