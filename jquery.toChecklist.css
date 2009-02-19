@@ -26,6 +26,5 @@ ul.showSelectedItems { color: #770; font-size: .8em; list-style-position: outsid
 
 /**** Search box ****/
 div.findInList { margin-bottom: 5px; }
-div.findInList input { background-color: #ffffef; border: solid 1px #eee; color: black; font-size: .9em; padding: 2px; }
+div.findInList input { background-color: #ffffef; border: solid 1px #eee; color: black; font-family: arial; font-size: .8em; padding: 2px; }
 div.findInList input.blurred { background-color: white; color: gray; }
-div.findInList input { font-family: arial; font-size: .8em; }
