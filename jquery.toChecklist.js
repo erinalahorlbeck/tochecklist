@@ -2,7 +2,7 @@
  * toChecklist plugin for jQuery 1.3.x
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist
- * @version 1.2.0
+ * @version 1.3.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +97,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 		addScrollBar : true,
 		addSearchBox : false,
+		searchBoxText : 'Type here to search list...',
 		showCheckboxes : true,
 		showSelectedItems : false,
 		submitDataAsArray : true,
@@ -233,7 +234,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			}
 
 			$(checklistDivId).before('<div class="findInList" id="'+jSelectElemId+'_findInListDiv">'
-				+'<input type="text" value="Type here to search list..." id="'
+				+'<input type="text" value="'+o.searchBoxText+'" id="'
 				+jSelectElemId+'_findInList" class="'+o.cssBlurred+'" /></div>');
 
 			// Set width to same as original SELECT element.
