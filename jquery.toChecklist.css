@@ -19,7 +19,7 @@ div.checklist label.disabled { color: #ddd; }
 
 /*div.checklist li { position: relative; }*/
 div.checklist li input { display: block; float: left; }
-div.checklist label { display: block; }
+div.checklist label { display: block; margin: 0; padding: 0; }
 div.checklist label.leaveRoomForCheckbox { display: block; padding-left: 25px; /* If hiding checkboxes, set padding-left to 3px */ } 
 
 ul.showSelectedItems { color: #770; font-size: .8em; list-style-position: outside; margin-left: 0; padding-left: 1.4em; }
