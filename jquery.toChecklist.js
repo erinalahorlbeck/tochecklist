@@ -101,6 +101,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		showCheckboxes : true,
 		showSelectedItems : false,
 		submitDataAsArray : true,
+		useNameNotId : false,
 
 		// In case of name conflicts, you can change the class names to whatever you want to use.
 		cssChecklist : 'checklist',
@@ -131,7 +132,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		// Hang on to the important information about this <select> element.
 		var jSelectElem = $(this);
 		var jSelectElemId = jSelectElem.attr('id');
-		if (jSelectElemId == '') {
+		if (jSelectElemId == '' || o.useNameNotId) {
 			// Regardless of whether this is a PHP environment, we need an id
 			// for the element, and it shouldn't have brackets [] in it.
 			jSelectElemId = jSelectElem.attr('name').replace(/\[\]/,'');
