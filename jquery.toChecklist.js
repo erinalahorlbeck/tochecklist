@@ -57,7 +57,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 					break;
 
 				case 'invert' :
-					var selector = 'li';
+					var selector = 'li:has(input)';
 					break;
 
 				default :
@@ -114,7 +114,8 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		cssShowSelectedItems : 'showSelectedItems',
 		cssFocused : 'focused', // This cssFocused is for the li's in the checklist
 		cssFindInList : 'findInList',
-		cssBlurred : 'blurred' // This cssBlurred is for the findInList divs.
+		cssBlurred : 'blurred', // This cssBlurred is for the findInList divs.
+		cssOptgroup : 'optgroup'
 
 	}, o);
 
@@ -157,10 +158,8 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		} else if (this.type == 'select-one') {
 			return $;
 		}
-
-		// Loop through all the options and convert them to li's
-		// with checkboxes and labels.		
-		$('option',jSelectElem).each(function() {
+		
+		var convertListItemsToCheckboxes = function() {
 			var checkboxValue = $(this).attr('value');
 			// The option tag may not have had a "value" attribute set. In this case,
 			// Firefox automatically uses the innerHTML instead, but we need to set it
@@ -195,7 +194,25 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			} else {
 				$('label[for='+checkboxId+']').addClass(o.cssLeaveRoomForCheckbox);	
 			}
+		};
+
+		// Loop through optgroup elements (if any) and turn them into headings
+		$('optgroup', jSelectElem).each(function() {
+			$('option',this).each(convertListItemsToCheckboxes);
+			$(this).replaceWith( '<li class="'+o.cssOptgroup+'">' + $(this).attr('label') + '</li>' + $(this).html() );
 		});
+
+		// Loop through all remaining options (not in optgroups) and convert them to li's
+		// with checkboxes and labels.		
+		$('option',jSelectElem).each(convertListItemsToCheckboxes);
+
+		// If the first list item in the checklist is an optgroup label, we want
+		// to remove the top border so it doesn't look ugly.
+		$('li:first',jSelectElem).each(function() {
+			if ($(this).hasClass('optgroup'))
+				$(this).css('border-top','none');
+		});
+
 		
 		var checklistId = jSelectElemId+'_'+'checklist';
 
@@ -405,7 +422,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			$(this).parent().focus();
 		};
 
-		$('li',checklistDivId).click(check).keydown(check);
+		$('li:has(input)',checklistDivId).click(check).keydown(check);
 		$('label',checklistDivId).focus(handFocusToLI);
 		$('input',checklistDivId).focus(handFocusToLI);
 		toggleDivGlow();

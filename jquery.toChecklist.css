@@ -28,3 +28,6 @@ ul.showSelectedItems { color: #770; font-size: .8em; list-style-position: outsid
 div.findInList { margin-bottom: 5px; }
 div.findInList input { background-color: #ffffef; border: solid 1px #eee; color: black; font-family: arial; font-size: .8em; padding: 2px; }
 div.findInList input.blurred { background-color: white; color: gray; }
+
+div.checklist li.optgroup { font-size: 1.1em; font-weight: bold; font-style: italic; background-color: #ccc; border-top: 1px solid #777; border-bottom: 1px solid #777; padding-left: 7px; }
+div.checklist li.optgroup:hover { background-color: #ccc; }
