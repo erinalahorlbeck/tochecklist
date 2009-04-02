@@ -1,5 +1,5 @@
 /**
- * toChecklist plugin for jQuery 1.3.x
+ * toChecklist plugin (works with jQuery 1.3.x)
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist
  * @version 1.4.0
@@ -362,6 +362,17 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			}
 		}
 
+		var moveToNextLi = function() {
+			// Make sure that the next LI has a checkbox (some LIs don't, because
+			// they came from <optgroup> tags.
+			if ( $(this).attr('tagName') != 'LI' )
+				return;
+			if ( $(this).is('li:has(input)') )
+				$(this).focus();
+			else
+				$(this).next().each(moveToNextLi);
+		}
+
 		// Check/uncheck boxes
 		var check = function(event) {
 			
@@ -377,8 +388,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				if (event.keyCode == 9 && !event.shiftKey) {
 					event.preventDefault();
 					// Move to the next LI
-					$(this).unbind('keydown.tabBack').blur().next(':has(input)').focus();
-														
+					$(this).unbind('keydown.tabBack').blur().next().each(moveToNextLi);
 				} else if (event.keyCode == 9 && event.shiftKey) {
 					// Move to the previous LI
 					//$(this).prev(':has(input)').focus();
