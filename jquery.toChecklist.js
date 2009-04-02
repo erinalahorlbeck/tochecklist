@@ -2,7 +2,7 @@
  * toChecklist plugin for jQuery 1.3.x
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist
- * @version 1.3.1
+ * @version 1.4.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -377,10 +377,11 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				if (event.keyCode == 9 && !event.shiftKey) {
 					event.preventDefault();
 					// Move to the next LI
-					$(this).unbind('keydown.tabBack').blur().next().focus();
-					
+					$(this).unbind('keydown.tabBack').blur().next(':has(input)').focus();
+														
 				} else if (event.keyCode == 9 && event.shiftKey) {
 					// Move to the previous LI
+					//$(this).prev(':has(input)').focus();
 				}
 
 				if (event.keyCode != 32) return;
