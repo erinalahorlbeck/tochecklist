@@ -1,7 +1,7 @@
 /**
  * toChecklist plugin (works with jQuery 1.3.x)
  * @author Scott Horlbeck <me@scotthorlbeck.com>
- * @url http://www.scotthorlbeck.com/code/tochecklist
+ * @url http://www.scotthorlbeck.com/code/tochecklist/
  * @version 1.4.0
  *
  * This program is free software: you can redistribute it and/or modify
@@ -101,7 +101,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		showCheckboxes : true,
 		showSelectedItems : false,
 		submitDataAsArray : true,
-		useNameNotId : false,
+		preferIdOverName : true,
 
 		// In case of name conflicts, you can change the class names to whatever you want to use.
 		cssChecklist : 'checklist',
@@ -133,7 +133,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		// Hang on to the important information about this <select> element.
 		var jSelectElem = $(this);
 		var jSelectElemId = jSelectElem.attr('id');
-		if (jSelectElemId == '' || o.useNameNotId) {
+		if (jSelectElemId == '' || !o.preferIdOverName) {
 			// Regardless of whether this is a PHP environment, we need an id
 			// for the element, and it shouldn't have brackets [] in it.
 			jSelectElemId = jSelectElem.attr('name').replace(/\[\]/,'');
