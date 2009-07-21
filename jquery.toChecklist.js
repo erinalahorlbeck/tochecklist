@@ -2,7 +2,7 @@
  * toChecklist plugin (works with jQuery 1.3.x)
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist/
- * @version 1.4.0
+ * @version 1.4.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,8 +100,21 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		searchBoxText : 'Type here to search list...',
 		showCheckboxes : true,
 		showSelectedItems : false,
-		submitDataAsArray : true,
-		preferIdOverName : true,
+		submitDataAsArray : true, // This one allows compatibility with languages that use arrays
+		                          // to process the form data, such as PHP. Set to false if using
+		                          // ColdFusion or anything else with a list-based approach.
+		preferIdOverName : true, // When this is true (default) the ID of the select box is
+		                         // submitted to the server as the variable containing the checked
+		                         // items. Set to false to use the "name" attribute instead (this makes
+		                         // it compatible with Drupal's Views module, among other things.)
+		maxNumOfSelections : -1, // If you want to limit the number of items a user can select in a
+		                         // checklist, set this to a positive integer.
+		                         
+		// This function gets executed whenever you go over the max number of allowable selections.
+		onMaxNumExceeded : function() { 
+			alert('You cannot select more than '+this.maxNumOfSelections+' items in this list.');
+		},
+
 
 		// In case of name conflicts, you can change the class names to whatever you want to use.
 		cssChecklist : 'checklist',
@@ -375,8 +388,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 		// Check/uncheck boxes
 		var check = function(event) {
-			
-			// This needs to be keyboard accessible too. Only check the box if the user
+						
 			// This needs to be keyboard accessible too. Only check the box if the user
 			// presses space (enter typically submits a form, so is not safe).
 			if (event.type == 'keydown') {
@@ -395,6 +407,19 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				}
 
 				if (event.keyCode != 32) return;
+			}
+
+
+			// If we go over the maxNumOfSelections limit, flash red and prevent the
+			// checking of the item.
+			var numOfItemsChecked = $('input:checked', checklistDivId).length;
+			if (o.maxNumOfSelections != -1 && numOfItemsChecked == o.maxNumOfSelections
+				&& !$('input',this).attr('checked')) {
+
+					o.onMaxNumExceeded();
+
+					event.preventDefault();				
+					return;
 			}
 
 			// Not sure if unbind() here removes default action, but that's what I want.
@@ -448,7 +473,6 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			}).parent();
 		}
 		$('form:has(div.'+o.cssChecklist+')').bind('reset.fixFormElems',fixFormElems);
-		
 		
 		// ================== List the selected items in a UL ==========================
 		
