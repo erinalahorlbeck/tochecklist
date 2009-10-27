@@ -2,7 +2,7 @@
  * toChecklist plugin (works with jQuery 1.3.x)
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist/
- * @version 1.4.1
+ * @version 1.4.2
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,6 +143,8 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 	// are going to be converted to checklists. Let's loop over them and do the conversion.
 	this.each(function() {
 
+		var numOfCheckedBoxesSoFar = 0;
+
 		// Hang on to the important information about this <select> element.
 		var jSelectElem = $(this);
 		var jSelectElemId = jSelectElem.attr('id');
@@ -191,7 +193,15 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			} else {
 				var disabled = '';
 				var disabledClass = '';
-				var selected = ($(this).attr('selected'))? 'checked="checked"' : '';
+				var selected = '';
+				if ($(this).attr('selected')) {
+					if (o.maxNumOfSelections != -1 && numOfCheckedBoxesSoFar < o.maxNumOfSelections) {
+						selected += 'checked="checked"';
+						numOfCheckedBoxesSoFar++;
+					} else if (o.maxNumOfSelections == -1) {
+						selected += 'checked="checked"';
+					}
+				}
 			}
 			
 			var arrayBrackets = (o.submitDataAsArray)? '[]' : '';
@@ -410,10 +420,10 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			}
 
 
-			// If we go over the maxNumOfSelections limit, flash red and prevent the
-			// checking of the item.
+			// If we go over the maxNumOfSelections limit, trigger our custom
+			// event onMaxNumExceeded.
 			var numOfItemsChecked = $('input:checked', checklistDivId).length;
-			if (o.maxNumOfSelections != -1 && numOfItemsChecked == o.maxNumOfSelections
+			if (o.maxNumOfSelections != -1 && numOfItemsChecked >= o.maxNumOfSelections
 				&& !$('input',this).attr('checked')) {
 
 					o.onMaxNumExceeded();
