@@ -1,8 +1,8 @@
 /**
- * toChecklist plugin (works with jQuery 1.3.x)
+ * toChecklist plugin (works with jQuery 1.3.x and 1.4.x)
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist/
- * @version 1.4.2
+ * @version 1.4.3
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,11 +40,11 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				showSelectedItemsSetting = $(checklistElem).attr('showSelectedItems');
 				$(checklistElem).attr('showSelectedItems', 'false');
 			}
-		}
+		};
 		
 		var enableDynamicList = function() {
 			$(checklistElem).attr('showSelectedItems', showSelectedItemsSetting);
-		}
+		};
 
 		switch(action) {
 
@@ -134,7 +134,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 	var error = function(msg) {
 		alert("jQuery Plugin Error (Plugin: toChecklist)\n\n"+msg);
-	}
+	};
 	
 	var overflowProperty = (o.addScrollBar)? 'overflow-y: auto; overflow-x: hidden;' : '';
 	var leaveRoomForCheckbox = (o.showCheckboxes)? 'padding-left: 25px' : 'padding-left: 3px';
@@ -267,12 +267,12 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				// Remove "type to find..." when focusing.
 				this.value = "";
 				$(this).removeClass(o.cssBlurred);
-			}
+			};
 			var blurSearchBox =function() {
 				// Restore default text on blur.
 				this.value = this.defaultValue;
 				$(this).addClass(o.cssBlurred);
-			}
+			};
 
 			$(checklistDivId).before('<div class="findInList" id="'+jSelectElemId+'_findInListDiv">'
 				+'<input type="text" value="'+o.searchBoxText+'" id="'
@@ -383,7 +383,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			} else {
 				$(checklistDivId).removeClass(o.cssChecklistHighlighted);
 			}
-		}
+		};
 
 		var moveToNextLi = function() {
 			// Make sure that the next LI has a checkbox (some LIs don't, because
@@ -394,7 +394,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				$(this).focus();
 			else
 				$(this).next().each(moveToNextLi);
-		}
+		};
 
 		// Check/uncheck boxes
 		var check = function(event) {
@@ -459,7 +459,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				$(checkbox).parent().removeClass(o.cssChecked);
 			}
 			toggleDivGlow();
-		}
+		};
 		
 		// Accessibility, primarily for IE
 		var handFocusToLI = function() {
@@ -481,7 +481,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				updateLIStyleToMatchCheckedStatus(this);
 				if (o.showSelectedItems) showSelectedItems();
 			}).parent();
-		}
+		};
 		$('form:has(div.'+o.cssChecklist+')').bind('reset.fixFormElems',fixFormElems);
 		
 		// ================== List the selected items in a UL ==========================
