@@ -95,40 +95,45 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 	// Provide default settings, which may be overridden if necessary.
 	o = jQuery.extend({
 
-		addScrollBar : true,
-		addSearchBox : false,
-		searchBoxText : 'Type here to search list...',
-		showCheckboxes : true,
-		showSelectedItems : false,
-		submitDataAsArray : true, // This one allows compatibility with languages that use arrays
-		                          // to process the form data, such as PHP. Set to false if using
-		                          // ColdFusion or anything else with a list-based approach.
-		preferIdOverName : true, // When this is true (default) the ID of the select box is
-		                         // submitted to the server as the variable containing the checked
-		                         // items. Set to false to use the "name" attribute instead (this makes
-		                         // it compatible with Drupal's Views module, among other things.)
-		maxNumOfSelections : -1, // If you want to limit the number of items a user can select in a
-		                         // checklist, set this to a positive integer.
+		"addScrollBar" : true,
+		"addSearchBox" : false,
+		"searchBoxText" : 'Type here to search list...',
+		"showCheckboxes" : true,
+		"showSelectedItems" : false,
+		/*
+		"overwriteName"     : false, // Use false when you need to use original name attribute, or use
+		                             // true if you want to overwrite original name attribute with id; Very
+		                             // important for Ruby on Rails support to use original name attribute!
+		*/
+		"submitDataAsArray" : true, // This one allows compatibility with languages that use arrays
+		                            // to process the form data, such as PHP. Set to false if using
+		                            // ColdFusion or anything else with a list-based approach.
+		"preferIdOverName" : true,  // When this is true (default) the ID of the select box is
+		                            // submitted to the server as the variable containing the checked
+		                            // items. Set to false to use the "name" attribute instead (this makes
+		                            // it compatible with Drupal's Views module and Ruby on Rails.)
+		"maxNumOfSelections" : -1,  // If you want to limit the number of items a user can select in a
+		                            // checklist, set this to a positive integer.
 		                         
 		// This function gets executed whenever you go over the max number of allowable selections.
-		onMaxNumExceeded : function() { 
+		"onMaxNumExceeded" : function() { 
 			alert('You cannot select more than '+this.maxNumOfSelections+' items in this list.');
 		},
 
 
 		// In case of name conflicts, you can change the class names to whatever you want to use.
-		cssChecklist : 'checklist',
-		cssChecklistHighlighted : 'checklistHighlighted',
-		cssLeaveRoomForCheckbox : 'leaveRoomForCheckbox', // For label elements
-		cssEven : 'even',
-		cssOdd : 'odd',
-		cssChecked : 'checked',
-		cssDisabled : 'disabled',
-		cssShowSelectedItems : 'showSelectedItems',
-		cssFocused : 'focused', // This cssFocused is for the li's in the checklist
-		cssFindInList : 'findInList',
-		cssBlurred : 'blurred', // This cssBlurred is for the findInList divs.
-		cssOptgroup : 'optgroup'
+		"cssChecklist" : 'checklist',
+		"cssChecklistHighlighted" : 'checklistHighlighted',
+		"cssLeaveRoomForCheckbox" : 'leaveRoomForCheckbox', // For label elements
+		"cssEven" : 'even',
+		"cssOdd" : 'odd',
+		"cssChecked" : 'checked',
+		"cssDisabled" : 'disabled',
+		"cssShowSelectedItems" : 'showSelectedItems',
+		"cssFocused" : 'focused', // This cssFocused is for the li's in the checklist
+		"cssFindInList" : 'findInList',
+		"cssBlurred" : 'blurred', // This cssBlurred is for the findInList divs.
+		"cssOptgroup" : 'optgroup'
 
 	}, o);
 
@@ -147,6 +152,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 		// Hang on to the important information about this <select> element.
 		var jSelectElem = $(this);
+		var jSelectElemName = jSelectElem.attr('name').replace(/\[\]/,'');
 		var jSelectElemId = jSelectElem.attr('id');
 		if (jSelectElemId == '' || !o.preferIdOverName) {
 			// Regardless of whether this is a PHP environment, we need an id
@@ -205,9 +211,10 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			}
 			
 			var arrayBrackets = (o.submitDataAsArray)? '[]' : '';
+			var checkboxName = (o.preferIdOverName)? jSelectElemId+arrayBrackets : jSelectElemName+arrayBrackets;
 
 			$(this).replaceWith('<li tabindex="0"><input type="checkbox" value="'+checkboxValue
-				+'" name="'+jSelectElemId+arrayBrackets+'" id="'+checkboxId+'" ' + selected + disabled
+				+'" name="'+checkboxName+'" id="'+checkboxId+'" ' + selected + disabled
 				+' /><label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
 			if (o.showCheckboxes === false) {
