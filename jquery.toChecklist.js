@@ -152,12 +152,12 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 		// Hang on to the important information about this <select> element.
 		var jSelectElem = $(this);
-		var jSelectElemName = jSelectElem.attr('name').replace(/\[\]/,'');
 		var jSelectElemId = jSelectElem.attr('id');
+		var jSelectElemName = jSelectElem.attr('name');
 		if (jSelectElemId == '' || !o.preferIdOverName) {
 			// Regardless of whether this is a PHP environment, we need an id
 			// for the element, and it shouldn't have brackets [] in it.
-			jSelectElemId = jSelectElem.attr('name').replace(/\[\]/,'');
+			jSelectElemId = jSelectElemName.replace(/\[|\]/g,'');
 			if (jSelectElemId == '') {
 				error('Can\'t convert element to checklist.\nYour SELECT element must'
 					+' have a "name" attribute and/or an "id" attribute specified.');
@@ -165,8 +165,8 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			}
 		}
 
-		var h = jSelectElem.height(); /* : '100%'; */
-		var w = jSelectElem.width();
+		var h = jSelectElem.outerHeight(); /* : '100%'; */
+		var w = jSelectElem.outerWidth();
 		// We have to account for the extra thick left border.
 		w -= 4;
 
@@ -191,6 +191,9 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			checkboxValue = checkboxValue.replace(/ /g,'_');
 			
 			var checkboxId = jSelectElemId+'_'+checkboxValue;
+			// escape bad values for checkboxId
+			checkboxId = checkboxId.replace(/(\.|\/|\,|\%|\<|\>)/g, '\\$1');
+			
 			var labelText = $(this).attr('innerHTML');
 			var selected = '';
 			if ($(this).attr('disabled')) {
@@ -214,7 +217,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			var checkboxName = (o.preferIdOverName)? jSelectElemId+arrayBrackets : jSelectElemName+arrayBrackets;
 
 			$(this).replaceWith('<li tabindex="0"><input type="checkbox" value="'+checkboxValue
-				+'" name="'+checkboxName+'" id="'+checkboxId+'" ' + selected + disabled
+ 				+'" name="'+(o.preferIdOverName ? jSelectElemId:jSelectElemName) + arrayBrackets+'" id="'+checkboxId+'" ' + selected + disabled
 				+' /><label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
 			if (o.showCheckboxes === false) {
@@ -503,9 +506,13 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			// that is highlighted in the checklist.
 			$(selectedItemsListId).html('');
 			$('label',checklistDivId).each(function() {
+        var vcontext = $(this).parent();
 				if ($(this).parent().hasClass(o.cssChecked)) {
 					var labelText = jQuery.trim(this.innerHTML);
-					$(selectedItemsListId).append('<li>'+labelText+'</li>');
+					$('<li class="">'+labelText+'</li>')
+            .bind('click.remove', function() {
+              vcontext.trigger('click');
+            }).appendTo(selectedItemsListId);
 				}
 			});
 		};
