@@ -2,7 +2,7 @@
  * toChecklist plugin (works with jQuery 1.3.x and 1.4.x)
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist/
- * @version 1.4.3
+ * @version 1.5.0 alpha
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,11 +100,9 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		"searchBoxText" : 'Type here to search list...',
 		"showCheckboxes" : true,
 		"showSelectedItems" : false,
-		/*
 		"overwriteName"     : false, // Use false when you need to use original name attribute, or use
 		                             // true if you want to overwrite original name attribute with id; Very
 		                             // important for Ruby on Rails support to use original name attribute!
-		*/
 		"submitDataAsArray" : true, // This one allows compatibility with languages that use arrays
 		                            // to process the form data, such as PHP. Set to false if using
 		                            // ColdFusion or anything else with a list-based approach.
@@ -133,8 +131,15 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		"cssFocused" : 'focused', // This cssFocused is for the li's in the checklist
 		"cssFindInList" : 'findInList',
 		"cssBlurred" : 'blurred', // This cssBlurred is for the findInList divs.
-		"cssOptgroup" : 'optgroup'
-
+		"cssOptgroup" : 'optgroup',
+		
+		"listWidth" : 0,  // force the list width, if 0 the original SELECT width is used
+		"itemWidth" : 0   // 0   : each item will be large as the list (single column)
+		                  // > 0 : each item will have a fixed size, so we could split
+		                  //       list into more than one column
+		                  // WARNING: vertical scroll bar width must be taken into account
+		                  // listWidth=200, itemWidth=50 DOES NOT GIVE a 4 columns list
+		                  // if list scroll bar is visible
 	}, o);
 
 	var error = function(msg) {
@@ -166,10 +171,9 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		}
 
 		var h = jSelectElem.outerHeight(); /* : '100%'; */
-		var w = jSelectElem.outerWidth();
+		var w = o.listWidth ? o.listWidth : jSelectElem.outerWidth();
 		// We have to account for the extra thick left border.
 		w -= 4;
-
 
 		// Make sure it's a SELECT element, and that it's a multiple one.
 		if (this.type != 'select-multiple' && this.type != 'select-one') {
@@ -179,7 +183,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		} else if (this.type == 'select-one') {
 			return $;
 		}
-		
+
 		var convertListItemsToCheckboxes = function() {
 			var checkboxValue = $(this).attr('value');
 			// The option tag may not have had a "value" attribute set. In this case,
@@ -215,9 +219,11 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			
 			var arrayBrackets = (o.submitDataAsArray)? '[]' : '';
 			var checkboxName = (o.preferIdOverName)? jSelectElemId+arrayBrackets : jSelectElemName+arrayBrackets;
+			// avoid trailing double [][]
+			checkboxName = checkboxName.replace(/\[\]\[\]$/, '[]');
 
 			$(this).replaceWith('<li tabindex="0"><input type="checkbox" value="'+checkboxValue
- 				+'" name="'+(o.preferIdOverName ? jSelectElemId:jSelectElemName) + arrayBrackets+'" id="'+checkboxId+'" ' + selected + disabled
+ 				+'" name="'+checkboxName+'" id="'+checkboxId+'" ' + selected + disabled
 				+' /><label for="'+checkboxId+'"'+disabledClass+'>'+labelText+'</label></li>');
 			// Hide the checkboxes.
 			if (o.showCheckboxes === false) {
@@ -356,7 +362,8 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		}
 
 		// ============ Add styles =============
-
+		var items = $('li',checklistDivId);
+		
 		$(checklistDivId).addClass(o.cssChecklist);
 		if (o.addScrollBar) {
 			$(checklistDivId).height(h - findInListDivHeight).width(w);
@@ -369,16 +376,30 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		$('li:even',checklistDivId).addClass(o.cssEven);
 		$('li:odd',checklistDivId).addClass(o.cssOdd);
 		// Emulate the :hover effect for keyboard navigation.
-		$('li',checklistDivId).focus(function() {
+		items.focus(function() {
 			$(this).addClass(o.cssFocused);
 		}).blur(function(event) {
 			$(this).removeClass(o.cssFocused);
 		});/*.mouseout(function() {
 			$(this).removeClass(o.cssFocused);
 		});*/
+		
+		// =================== multicolumn items ===================
+		// patch by Claudio Nicora (http://coolsoft.altervista.org)
+		// make items float:left if itemWidth option is set
+		// =========================================================
+		if(o.itemWidth > 0) {
+      var colW = o.itemWidth + 'px';
+      items.each(function() {
+        $(this).css({
+          'float': 'left',
+          'width': colW
+        });
+      });
+		}
 			
 		// Highlight preselected ones.
-		$('li',checklistDivId).each(function() {
+		items.each(function() {
 			if ($('input',this).attr('checked')) {
 				$(this).addClass(o.cssChecked);	
 			}
@@ -388,7 +409,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 		var toggleDivGlow = function() {
 			// Make sure the div is glowing if something is checked in it.			
-			if ($('li',checklistDivId).hasClass(o.cssChecked)) {
+			if (items.hasClass(o.cssChecked)) {
 				$(checklistDivId).addClass(o.cssChecklistHighlighted);
 			} else {
 				$(checklistDivId).removeClass(o.cssChecklistHighlighted);
@@ -536,5 +557,16 @@ jQuery.fn.isChecklist = function() {
 	// and we want to specifically return true or false.
 	return (isChecklist)? true : false;
 };
+
+//
+//function getTotalHMargin(e) {
+//	var tot = 0;
+//	tot += parseInt(e.css('margin-left').replace('px',''));
+//	tot += parseInt(e.css('margin-right').replace('px',''));
+//	tot += parseInt(e.css('padding-left').replace('px',''));
+//	tot += parseInt(e.css('padding-right').replace('px',''));
+//	return tot;
+//}
+
 
 })(jQuery);
