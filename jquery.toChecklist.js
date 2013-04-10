@@ -1,5 +1,5 @@
 /**
- * toChecklist plugin (works with jQuery 1.3.x and 1.4.x)
+ * toChecklist plugin (requires jQuery 1.9.x)
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist/
  * @version 1.5.0 alpha
@@ -17,7 +17,7 @@
  *
  * Thanks to the UNM Health Sciences Library and Informatics Center
  * (http://hsc.unm.edu/library/) for funding the initial creation
- * of this plugin and allowing me to publish it as open source software.
+ * of this plugin and allowing me to license it as open source software.
 */
 (function($) {
 
@@ -185,12 +185,12 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		}
 
 		var convertListItemsToCheckboxes = function() {
-			var checkboxValue = $(this).attr('value');
+			var checkboxValue = $(this).val();
 			// The option tag may not have had a "value" attribute set. In this case,
 			// Firefox automatically uses the innerHTML instead, but we need to set it
 			// manually for IE.
 			if (checkboxValue == '') {
-				checkboxValue = this.innerHTML;
+				checkboxValue = $(this).html();
 			}
 			checkboxValue = checkboxValue.replace(/ /g,'_');
 			
@@ -198,7 +198,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			// escape bad values for checkboxId
 			checkboxId = checkboxId.replace(/(\.|\/|\,|\%|\<|\>)/g, '\\$1');
 			
-			var labelText = $(this).attr('innerHTML');
+			var labelText = $(this).html();
 			var selected = '';
 			if ($(this).attr('disabled')) {
 				var disabled = ' disabled="disabled"';
@@ -260,7 +260,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		// can access it as before. Also, this allows the search box to be inside
 		// the div as well.
 		jSelectElem.replaceWith('<div id="'+jSelectElemId+'"><div id="'+checklistId+'">'
-			+'<ul>'+jSelectElem.attr('innerHTML')+'</ul></div></div>');
+			+'<ul>'+jSelectElem.html()+'</ul></div></div>');
 		var checklistDivId = '#'+checklistId;
 
 		// We're going to create a custom HTML attribute in the main div box (the one
@@ -419,7 +419,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 		var moveToNextLi = function() {
 			// Make sure that the next LI has a checkbox (some LIs don't, because
 			// they came from <optgroup> tags.
-			if ( $(this).attr('tagName') != 'LI' )
+			if ( $(this).prop('tagName').toLowerCase() != 'li' )
 				return;
 			if ( $(this).is('li:has(input)') )
 				$(this).focus();
@@ -468,7 +468,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			// Make sure that the event handler isn't triggered twice (thus preventing the user
 			// from actually checking the box) if clicking directly on checkbox or label.
 			// Note: the && is not a mistake here. It should not be ||
-			if (event.target.tagName != 'INPUT' && event.target.tagName != 'LABEL') {
+			if (event.target.tagName.toLowerCase() != 'input' && event.target.tagName.toLowerCase() != 'label') {
 				$('input',this).trigger('click');
 			}
 
@@ -529,7 +529,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 			$('label',checklistDivId).each(function() {
         var vcontext = $(this).parent();
 				if ($(this).parent().hasClass(o.cssChecked)) {
-					var labelText = jQuery.trim(this.innerHTML);
+					var labelText = jQuery.trim($(this).html());
 					$('<li class="">'+labelText+'</li>')
             .bind('click.remove', function() {
               vcontext.trigger('click');
@@ -550,7 +550,7 @@ jQuery.fn.isChecklist = function() {
 	var isChecklist = false; // Innocent until proven guilty...
 	this.each(function() {
 		var divContainsChecklist = $('#'+this.id+'_checklist',this).get();	
-		isChecklist = (this.tagName == 'DIV' && divContainsChecklist);
+		isChecklist = ($(this).prop('tagName').toLowerCase() == 'div' && divContainsChecklist);
 		return false; // same as "break"
 	});
 	// isChecklist will either be an HTML object here or undefined,
