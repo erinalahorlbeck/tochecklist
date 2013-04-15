@@ -3,6 +3,7 @@
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist/
  * @version 1.5.0
+ * @date 2013-04-15
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
