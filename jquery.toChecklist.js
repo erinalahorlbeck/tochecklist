@@ -210,15 +210,15 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 							// This function lets you shift-tab to get back to the search box easily.
 							if (event.keyCode == 9 && event.shiftKey) {
 								event.preventDefault(); // No double tabs, please...
-								$(textbox)
-								.off('focus.focusSearchBox')
-								.removeClass(o.cssBlurred)
-								.on('focus.focusSearchBox',focusSearchBox)
-								.on('blur.blurSearchBox',blurSearchBox).focus();
-									$(this).off('keydown.tabBack');
-								}
+								$(searchBoxId)
+								//.off('focus.focusSearchBox')
+								//.removeClass(o.cssBlurred)
+								//.on('focus.focusSearchBox',focusSearchBox)
+								  .on('blur.blurSearchBox',blurSearchBox).focus();
+								$(this).off('keydown.tabBack');
+							}
 						}).focus(); // Focuses the actual list item found by the search box
-						$(this).off('keydown.tabToFocus');
+						// $(this).off('keydown.tabToFocus');
 					} else {
 						$(this).off('blur.blurSearchBox');
 					}
@@ -233,7 +233,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 					var textbox = this; // holder
 					if ($(this).val() == '') {
 						showAllSelectOptions();
-						$(this).off('keydown.tabToFocus');
+						//$(this).off('keydown.tabToFocus');
 						return false;
 					}
 					
