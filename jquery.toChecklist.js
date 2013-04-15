@@ -149,8 +149,9 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 	
 	var addSearchBox = function(jSelectElem, checklistDivId, w) {
 		
+			// Poorly named function... It's really onFocusSearchBox.
 			var focusSearchBox = function() {
-				// Remove "type to find..." when focusing.
+				// Remove placeholder text when focusing search box.
 				$(this).val('');
 				$(this).removeClass(o.cssBlurred);
 			};
@@ -186,12 +187,47 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 					+'<input type="text" value="'+o.searchBoxText+'" id="'
 					+jSelectElem.attr('id')+'_findInList" class="'+o.cssBlurred+'" /></div>');
 	
-				// Set width to same as original SELECT element.
+				// Set width of searchbox input to same as original SELECT element.
 				$('#'+jSelectElem.attr('id')+'_findInList').css('width',w);
-				$('#'+jSelectElem.attr('id')+'_findInList')
-				// Attach event handlers to the input box...
+				
+				// Set up label elements to restore the default text to the search box
+				// when you navigate away from a list item that is focused.
+				$('label', checklistDivId).each(function() {
+					$(this).parent().on('blur.restoreDefaultText', function() {
+						$('#'+jSelectElem.attr('id')+'_findInList').val(o.searchBoxText)
+						  .addClass(o.cssBlurred).on('blur.blurSearchBox',blurSearchBox);
+					});
+				});
+
+				var searchBoxId = '#'+jSelectElem.attr('id')+'_findInList';
+
+				// We want to be able to simply press tab to move the focus from the
+				// search text box to the item in the list that we found with it.
+				$(searchBoxId).on('keydown.tabToFocus', function(event) {
+					if (event.keyCode == 9) {
+						// event.preventDefault(); // No double tabs, please...
+						$('label:first:visible', checklistDivId).parent().on('keydown.tabBack', function(event) {
+							// This function lets you shift-tab to get back to the search box easily.
+							if (event.keyCode == 9 && event.shiftKey) {
+								event.preventDefault(); // No double tabs, please...
+								$(textbox)
+								.off('focus.focusSearchBox')
+								.removeClass(o.cssBlurred)
+								.on('focus.focusSearchBox',focusSearchBox)
+								.on('blur.blurSearchBox',blurSearchBox).focus();
+									$(this).off('keydown.tabBack');
+								}
+						}).focus(); // Focuses the actual list item found by the search box
+						$(this).off('keydown.tabToFocus');
+					} else {
+						$(this).off('blur.blurSearchBox');
+					}
+				})
+
+				// Set up keydown and keyup event handlers, etc. on searchbox
 				.on('focus.focusSearchBox', focusSearchBox)
 				.on('blur.blurSearchBox',blurSearchBox)
+				
 				.on('keyup', function(event) {
 					// Search for the actual text.
 					var textbox = this; // holder
@@ -220,40 +256,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 							}
 						}
 						
-						// We want to be able to simply press tab to move the focus from the
-						// search text box to the item in the list that we found with it.
-						
-						// @todo Determine why the hell all this is being bound and unbound
-						//       here, on every single keyup! This is causing the default
-						//       search box text to not be displayed properly.
-						$(textbox).off('blur.blurSearchBox').off('keydown.tabToFocus')
-						.on('keydown.tabToFocus', function(event) {
-							if (event.keyCode == 9) {
-								// event.preventDefault(); // No double tabs, please...
-								$curLabel.parent().on('blur.restoreDefaultText', function() {
-									// This function restores the default text to the search box when
-									// you navigate away from a list item that is focused.
-									$(textbox).val(o.searchBoxText).addClass(o.cssBlurred)
-									.on('blur.blurSearchBox',blurSearchBox);
-									$(this).off('blur.restoreDefaultText');
-								}).on('keydown.tabBack', function(event) {
-									// This function lets you shift-tab to get back to the search box easily.
-									if (event.keyCode == 9 && event.shiftKey) {
-										event.preventDefault(); // No double tabs, please...
-										$(textbox)
-										.off('focus.focusSearchBox')
-										.removeClass(o.cssBlurred)
-										.on('focus.focusSearchBox',focusSearchBox)
-										.on('blur.blurSearchBox',blurSearchBox).focus();
-										$(this).off('keydown.tabBack');
-									}
-								}).focus(); // Focuses the actual list item found by the search box
-								$(this).off('keydown.tabToFocus');
-							} else {
-								$(textbox).off('blur.blurSearchBox');
-							}
-						});
-						
+					
 					});
 					
 					return;
@@ -264,7 +267,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 				// height of the checklist div. Also account for margin below the search box.
 				findInListDivHeight = $('#'+jSelectElem.attr('id')+'_findInListDiv').height() + 3;
 			
-      }
+      };
       
       initSearchBox();
 	};
