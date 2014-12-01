@@ -2,8 +2,8 @@
  * toChecklist plugin (requires jQuery 1.9.x)
  * @author Scott Horlbeck <me@scotthorlbeck.com>
  * @url http://www.scotthorlbeck.com/code/tochecklist/
- * @version 1.5.0
- * @date 2013-04-15
+ * @version 1.6.0
+ * @date 2014-12-01
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * Thanks to the UNM Health Sciences Library and Informatics Center
  * (http://hsc.unm.edu/library/) for funding the initial creation
  * of this plugin and allowing me to license it as open source software.
-*/
+ */
 (function($) {
 
 jQuery.fn.toChecklist = function(o) { // "o" stands for options
@@ -62,7 +62,7 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 					break;
 
 				default :
-					alert("toChecklist Plugin says:\n\nWarning - Invalid action requested on checklist.\nThe action requested was: " + action);
+					throw "toChecklist: Warning - Invalid action requested on checklist. The action requested was: '" + action + "'";
 					break;
 
 			}
@@ -81,10 +81,31 @@ jQuery.fn.toChecklist = function(o) { // "o" stands for options
 
 
 	};
+
+	var getChecklistValue = function(jqStack)
+	{
+		var value = '';
+		var i = 0;
+		jqStack.each(function() {
+			$(this).find('input:checked').each(function() {
+				if (value != '' && i > 0) {
+					value += ',';
+				}
+				value += $(this).val();
+				i++;
+			});
+		});
+		return value;
+	};
 	
 	// If o is a simple string, then we're updating an existing checklist
 	// (i.e. 'checkAll') instead of converting a regular multi-SELECT box.
 	if (typeof o == 'string') {
+		if (o === 'isChecklist' || o === 'is')
+			return $(this).isChecklist();
+		if (o === 'val' && $(this).isChecklist()) {
+			return getChecklistValue(this);
+		}
 		this.each(function() {
 			if ( !$(this).isChecklist() )
 				return true; // return true is same as 'continue'
