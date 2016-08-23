@@ -4,6 +4,7 @@ The toChecklist plug-in for jQuery will give you the functionality of a `<select
 
 This is necessary because the average, non-computer-savvy user is generally unaware of `ctrl+click`.
 
+[View Demo Page](http://scotthorlbeck.com/code/tochecklist)
 
 
 ## Installation
