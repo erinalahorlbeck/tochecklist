@@ -1,6 +1,8 @@
 # toChecklist plug-in for jQuery
 
-The toChecklist plug-in for jQuery will give you the functionality of a SELECT box without the need to `ctrl+click` items to select them.
+The toChecklist plug-in for jQuery will give you the functionality of a `<select multiple="multiple">` menu without the need to `ctrl+click` items to select/deselect them (`cmd+click` on Mac).
+
+This is necessary because the average, non-computer-savvy user is generally unaware of `ctrl+click`.
 
 
 
@@ -8,16 +10,23 @@ The toChecklist plug-in for jQuery will give you the functionality of a SELECT b
 
 The goal is to have `toChecklist` available via `npm`, but for now, you will have to set it up manually:
 
-Make sure you include jQuery 1.9.x or greater on your page (and possibly the [jquery-migrate plug-in](https://github.com/jquery/jquery-migrate)), and then you simply need the css and js files for `toChecklist` in a publicly accessible directory, like so:
+1.  First, make sure you include [jQuery](http://jquery.com) 1.9.x or greater on your page, typically in the `<head>` section of your html. (You might also need the [jquery-migrate plug-in](https://github.com/jquery/jquery-migrate) if using jQuery 1.12.x or greater). See example html below.
+2.  Copy the css and js files for `toChecklist` from the `src` folder to a directory that is publicly accessible on your web site.
+3.  Add them to your `<head>` section like so:
 
 
 ```html
-<!-- Stylesheet -->
-<link type="text/css" rel="stylesheet" media="screen" href="path/to/jquery.toChecklist.css" />
+<head>
+	<!-- Stylesheet -->
+	<link type="text/css" rel="stylesheet" media="screen" href="path/to/jquery.toChecklist.css" />
 
-<!-- Also, make sure you have jQuery itself along with the toChecklist plug-in -->
-<script type="text/javascript" src="path/to/jquery.js"></script>
-<script type="text/javascript" src="path/to/jquery.toChecklist.js"></script>
+	<!-- Also, make sure you have jQuery itself along with the toChecklist plug-in -->
+	<script type="text/javascript" src="path/to/jquery.js"></script>
+	<!-- You might need the jquery-migrate plug-in if using jQuery 1.12.x or later -->
+	<!-- (Feedback on whether this is actually necessary would be appreciated! -->
+	<script type="text/javascript" src="path/to/jquery-migrate.js"></script>
+	<script type="text/javascript" src="path/to/jquery.toChecklist.js"></script>
+</head>
 ```
 
 
