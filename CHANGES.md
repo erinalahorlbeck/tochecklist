@@ -4,7 +4,7 @@ This file lists changes as they occur between releases.
 
 To view changes per commit, use `git log` instead.
 
-Strict adherence to [semantic versioning](semver.org) will be
+Strict adherence to [semantic versioning](http://semver.org) will be
 implemented moving forward, but was not used for versions 1.6.0 and less.
 
 Download any of these versions listed below on
