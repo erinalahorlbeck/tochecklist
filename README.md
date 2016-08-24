@@ -9,7 +9,7 @@ This is necessary because the average, non-computer-savvy user is generally unaw
 
 ## Installation
 
-The goal is to have `toChecklist` available via `npm` (and when it is, note that it will be all lowercase), but for now, you will have to set it up manually:
+The goal is to have `toChecklist` available via `npm`, but for now, you will have to set it up manually:
 
 1.  First, make sure you include [jQuery](http://jquery.com) 1.9.x or greater on your page, typically in the `<head>` section of your html. (You might also need the [jquery-migrate plug-in](https://github.com/jquery/jquery-migrate) if using jQuery 1.12.x or greater). See example html below.
 2.  Copy the css and js files for `toChecklist` from the `src` folder to a directory that is publicly accessible on your web site.
