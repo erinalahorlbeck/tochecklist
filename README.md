@@ -11,7 +11,7 @@ This is necessary because the average, non-computer-savvy user is generally unaw
 
 The goal is to have `toChecklist` available via `npm`, but for now, you will have to set it up manually:
 
-1.  First, make sure you include [jQuery](http://jquery.com) 1.9.x or greater on your page, typically in the `<head>` section of your html. You can See example html below.  (Most features seem to work, up through jQuery 3.1.0, the present version.)
+1.  First, make sure you include [jQuery](http://jquery.com) 1.9.x or greater on your page, typically in the `<head>` section of your html. See example html below.  (Most features seem to work, up through jQuery 3.1.0, the present version.)
 2.  Copy the css and js files for `toChecklist` from the `src` folder to a directory that is publicly accessible on your web site.
 3.  Add them to your `<head>` section like so:
 
