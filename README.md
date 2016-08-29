@@ -62,3 +62,10 @@ There are a number of settings that you can pass in to customize each (or every)
 * [Demo page](http://scotthorlbeck.com/code/tochecklist)
 
 
+## Roadmap
+
+For next major version, 2.0.0:
+
+* Completely eliminate `.isChecklist()` in favor of properly namespaced method `.toChecklist('is')`
+* Make `animateSearch` default to `false` instead of true
+* Consider moving all options that start with `css` (such as `cssEven` and `cssOdd`) to a dedicated `css` object, so you could pass in `{ css : { even : 'even', odd : 'odd' } }` instead, and access at `css.even` and `css.odd` internally.
