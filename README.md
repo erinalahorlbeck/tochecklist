@@ -23,7 +23,7 @@ The goal is to have `toChecklist` available via `npm`, but for now, you will hav
 
 	<!-- Also, make sure you have jQuery itself along with the toChecklist plug-in -->
 	<script src="path/to/jquery.js"></script>
-	
+
 	<!-- Note that many web servers are case-sensitive when it comes to file names -->
 	<script src="path/to/jquery.toChecklist.js"></script>
 </head>
@@ -66,6 +66,7 @@ There are a number of settings that you can pass in to customize each (or every)
 
 For next major version, 2.0.0:
 
+* Add ability to set the value of a checklist using the `'val'` method (which is currently just a getter).
 * Completely eliminate `.isChecklist()` in favor of properly namespaced method `.toChecklist('is')`
 * Make `animateSearch` default to `false` instead of true
 * Consider moving all options that start with `css` (such as `cssEven` and `cssOdd`) to a dedicated `css` object, so you could pass in `{ css : { even : 'even', odd : 'odd' } }` instead, and access at `css.even` and `css.odd` internally.
