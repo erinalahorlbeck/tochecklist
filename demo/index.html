@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>toChecklist plug-in for jQuery</title>
+
+        <!-- Stylesheet -->
+        <link type="text/css" rel="stylesheet" media="screen" href="../src/jquery.toChecklist.css" />
+
+        <!-- Also, make sure you have jQuery itself along with the toChecklist plug-in -->
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+        <!-- Note that many web servers are case-sensitive when it comes to file names -->
+        <script src="../src/jquery.toChecklist.js"></script>
+
+        <style type="text/css">
+            #mySelectBox {
+                width: 190px
+            }
+        </style>
+    </head>
+    <body>
+        <select id="mySelectBox" multiple="multiple">
+            <option>Value 1</option>
+            <option>Value 2</option>
+            <option>Value 3</option>
+        </select>
+        <script>
+            $(function() {
+                $('#mySelectBox').toChecklist({
+                    addSearchBox: true
+                });
+            });
+        </script>
+    </body>
+</html>

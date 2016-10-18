@@ -1,0 +1,23 @@
+{
+  "name": "jquery-tochecklist",
+  "license": "GPL-3.0",
+  "authors": [
+    "Scott Horlbeck <me@scotthorlbeck.com>"
+  ],
+  "description": "toChecklist - plug-in for jQuery - for select (multiple) menus.",
+  "homepage": "http://scotthorlbeck.com/code/tochecklist",
+  "keywords": [
+    "jquery",
+    "plugin",
+    "tochecklist",
+    "jquery-plugin",
+    "jquery-tochecklist"
+  ],
+  "main": "src/jquery.toChecklist.js",
+  "dependencies": {
+    "jquery": "1"
+  },
+  "ignore": [
+    "bower_components"
+  ]
+}
