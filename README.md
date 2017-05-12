@@ -1,3 +1,7 @@
+**THIS PLUG-IN IS NO LONGER ACTIVELY MAINTAINED.**
+
+Furthermore, it is only available under GPL, not MIT, license. You are strongly encouraged to look into other more modern, more freely-licensed plug-ins to replace the well-known shortcomings of `<select multiple="multiple">`
+
 # toChecklist plug-in for jQuery
 
 The toChecklist plug-in for jQuery will give you the functionality of a `<select multiple="multiple">` menu without the need to `ctrl+click` items to select/deselect them (`cmd+click` on Mac).
